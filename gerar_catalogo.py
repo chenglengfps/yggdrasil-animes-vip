@@ -6,7 +6,6 @@ import requests
 import emoji
 from dotenv import load_dotenv
 from hydrogram import Client
-from hydrogram.raw import functions
 
 load_dotenv()
 
@@ -60,68 +59,66 @@ async def main():
 
     try:
         async with app:
-            print(f"📌 Buscando TODOS os tópicos via paginação MTProto raw...")
-            peer = await app.resolve_peer(TARGET_GROUP_ID)
-            
-            offset_date = 0
-            offset_id = 0
-            offset_topic_id = 0
-            
-            while True:
-                # Chamada de baixo nível da API Telegram com offset correto
-                res = await app.invoke(
-                    functions.channels.GetForumTopics(
-                        channel=peer,
-                        offset_date=offset_date,
-                        offset_id=offset_id,
-                        offset_topic_id=offset_topic_id,
-                        limit=100
-                    )
-                )
+            print(f"📌 Buscando tópicos via get_forum_topics...")
+            async for topic in app.get_forum_topics(TARGET_GROUP_ID):
+                nome_topico = getattr(topic, 'title', '').strip()
+                topic_id = getattr(topic, 'id', None)
 
-                if not res.topics:
-                    break
+                if not nome_topico or not topic_id or topic_id in topicos_unicos:
+                    continue
 
-                for topic in res.topics:
-                    topic_id = getattr(topic, 'id', None)
-                    nome_topico = getattr(topic, 'title', '').strip()
+                nome_limpo = emoji.replace_emoji(nome_topico, replace='').strip().lower()
+                if any(termo in nome_limpo for termo in IGNORAR_TOPICOS):
+                    continue
 
-                    if not nome_topico or topic_id in topicos_unicos:
-                        continue
+                topicos_unicos.add(topic_id)
 
-                    topicos_unicos.add(topic_id)
+                if topic_id > maior_topic_id:
+                    maior_topic_id = topic_id
 
-                    nome_limpo = emoji.replace_emoji(nome_topico, replace='').strip().lower()
-                    if any(termo in nome_limpo for termo in IGNORAR_TOPICOS):
-                        print(f"🚫 Ignorando tópico de bate-papo: {nome_topico}")
-                        continue
+                slug = limpar_nome_para_slug(nome_topico) or "anime"
+                link_bot = f"https://t.me/{BOT_TARGET}?start={slug}"
 
-                    if topic_id and topic_id > maior_topic_id:
-                        maior_topic_id = topic_id
+                animes_encontrados.append({
+                    "id": topic_id,
+                    "nome": nome_topico,
+                    "link": link_bot
+                })
 
-                    slug = limpar_nome_para_slug(nome_topico) or "anime"
-                    link_bot = f"https://t.me/{BOT_TARGET}?start={slug}"
-
-                    animes_encontrados.append({
-                        "id": topic_id,
-                        "nome": nome_topico,
-                        "link": link_bot
-                    })
-
-                # Prepara o offset para buscar a próxima página de tópicos
-                last_topic = res.topics[-1]
-                offset_topic_id = last_topic.id
-                offset_id = getattr(last_topic, 'top_message', 0)
-                
-                # Para quando a lista retornada for menor que o limite (fim dos tópicos)
-                if len(res.topics) < 100:
-                    break
+            # Se get_forum_topics pegou poucos itens, faz varredura complementar no histórico de mensagens
+            if len(animes_encontrados) < 30:
+                print("🔄 Fazendo busca complementar via histórico de mensagens...")
+                async for message in app.get_chat_history(TARGET_GROUP_ID, limit=500):
+                    thread_id = getattr(message, 'message_thread_id', None)
+                    reply_to = getattr(message, 'reply_to_message', None)
+                    
+                    # Tenta capturar o nome do tópico através das mensagens de serviço de criação do tópico
+                    if message.service and hasattr(message, 'forum_topic_created'):
+                        nome_topico = message.forum_topic_created.title
+                        topic_id = message.id
+                        if topic_id and nome_topico and topic_id not in topicos_unicos:
+                            nome_limpo = emoji.replace_emoji(nome_topico, replace='').strip().lower()
+                            if not any(termo in nome_limpo for termo in IGNORAR_TOPICOS):
+                                topicos_unicos.add(topic_id)
+                                if topic_id > maior_topic_id:
+                                    maior_topic_id = topic_id
+                                slug = limpar_nome_para_slug(nome_topico) or "anime"
+                                link_bot = f"https://t.me/{BOT_TARGET}?start={slug}"
+                                animes_encontrados.append({
+                                    "id": topic_id,
+                                    "nome": nome_topico,
+                                    "link": link_bot
+                                })
 
     except Exception as e:
-        print(f"❌ Erro de execução no Hydrogram RAW: {e}")
+        print(f"❌ Erro de execução no Hydrogram: {e}")
 
     total_animes = len(animes_encontrados)
-    print(f"📊 Total real de animes encontrados: {total_animes}")
+    print(f"📊 Total de animes encontrados: {total_animes}")
+
+    if total_animes == 0:
+        print("⚠️ NENHUM ANIME ENCONTRADO! Abortando atualização para proteger o catálogo atual.")
+        return
 
     nodes = [
         {"tag": "h3", "children": ["Yggdrasil Animes VIP - Catálogo Oficial"]},
@@ -154,10 +151,7 @@ async def main():
             "children": children_elements
         })
 
-    if lista_items:
-        nodes.append({"tag": "ul", "children": lista_items})
-    else:
-        nodes.append({"tag": "p", "children": ["Nenhum anime cadastrado nos tópicos no momento."]})
+    nodes.append({"tag": "ul", "children": lista_items})
 
     print(f"📝 Atualizando página fixa no Telegraph ({PATH_PAGINA})...")
     url_telegraph = "https://api.telegra.ph/editPage"
@@ -171,18 +165,6 @@ async def main():
     }
 
     resp = requests.post(url_telegraph, data=payload).json()
-
-    if not resp.get("ok") and resp.get("error") in ["PAGE_ACCESS_DENIED", "PATH_INVALID"]:
-        print("⚠️ Erro ao editar path padrão. Tentando recriar página...")
-        url_create = "https://api.telegra.ph/createPage"
-        payload_create = {
-            "access_token": TELEGRAPH_TOKEN,
-            "title": "Lista de animes",
-            "author_name": "Yggdrasil VIP",
-            "content": str(nodes).replace("'", '"'),
-            "return_content": True
-        }
-        resp = requests.post(url_create, data=payload_create).json()
 
     if resp.get("ok"):
         print(f"🎉 CATÁLOGO ATUALIZADO COM SUCESSO! Link: {resp['result']['url']}")
