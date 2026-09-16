@@ -19,7 +19,6 @@ SESSION_STRING = os.getenv("SESSION_STRING")
 if API_ID:
     API_ID = int(API_ID)
 
-# Limpa espacos, aspas extras e quebras de linha da SESSION_STRING
 if SESSION_STRING:
     SESSION_STRING = SESSION_STRING.strip().strip("'").strip('"')
 
@@ -28,8 +27,13 @@ BOT_TARGET = "Quinellaadm_bot"
 CACHE_FILE = "animes_cache.json"
 PATH_PAGINA = "Yggdrasil-Animes-VIP-09-15"
 
-def contem_emoji(texto):
-    return bool(re.search(r'[\U00010000-\U0010ffff]|:\w+:', emoji.demojize(texto)))
+def limpar_nome_para_slug(texto):
+    # Remove emojis e caracteres especiais para criar a palavra-chave do bot
+    texto_sem_emoji = emoji.replace_emoji(texto, replace='')
+    slug = re.sub(r'[^a-zA-Z0-9_]', '_', texto_sem_emoji.strip().lower())
+    # Remove underscores duplicados/sobrando
+    slug = re.sub(r'_+', '_', slug).strip('_')
+    return slug
 
 def salvar_cache(lista_animes):
     with open(CACHE_FILE, "w", encoding="utf-8") as f:
@@ -55,27 +59,46 @@ async def main():
     try:
         chat_entity = await client.get_entity(GROUP_ID)
         
-        resultado = await client(functions.channels.GetForumTopicsRequest(
-            channel=chat_entity,
-            offset_date=0,
-            offset_id=0,
-            offset_topic=0,
-            limit=100,
-            q=''
-        ))
+        offset_date = 0
+        offset_id = 0
+        offset_topic = 0
 
-        for topic in resultado.topics:
-            nome_topico = getattr(topic, 'title', '').strip()
-            if not nome_topico:
-                continue
-            
-            if contem_emoji(nome_topico):
-                print(f"Ignorado (Emoji): {nome_topico}")
-                continue
-            
-            slug = re.sub(r'[^a-zA-Z0-9_]', '_', nome_topico.lower())
-            link_bot = f"https://t.me/{BOT_TARGET}?start={slug}"
-            animes_encontrados.append({"nome": nome_topico, "link": link_bot})
+        while True:
+            resultado = await client(functions.channels.GetForumTopicsRequest(
+                channel=chat_entity,
+                offset_date=offset_date,
+                offset_id=offset_id,
+                offset_topic=offset_topic,
+                limit=100,
+                q=''
+            ))
+
+            if not resultado.topics:
+                break
+
+            for topic in resultado.topics:
+                nome_topico = getattr(topic, 'title', '').strip()
+                if not nome_topico:
+                    continue
+                
+                # Ignora tópico "General" / "Geral"
+                if nome_topico.lower() in ["general", "geral"]:
+                    continue
+
+                slug = limpar_nome_para_slug(nome_topico)
+                if not slug:
+                    slug = "anime"
+
+                link_bot = f"https://t.me/{BOT_TARGET}?start={slug}"
+                animes_encontrados.append({"nome": nome_topico, "link": link_bot})
+
+            if len(resultado.topics) < 100:
+                break
+                
+            ultimo = resultado.topics[-1]
+            offset_topic = ultimo.id
+            offset_id = getattr(ultimo, 'top_message', 0)
+            offset_date = getattr(ultimo, 'date', 0)
 
     except Exception as e:
         print(f"❌ Erro ao ler tópicos via API: {e}")
@@ -95,7 +118,7 @@ async def main():
     ]
 
     lista_items = []
-    for anime in sorted(animes_encontrados, key=lambda x: x["nome"]):
+    for anime in sorted(animes_encontrados, key=lambda x: x["nome"].lower()):
         lista_items.append({
             "tag": "li",
             "children": [
@@ -110,7 +133,7 @@ async def main():
     if lista_items:
         nodes.append({"tag": "ul", "children": lista_items})
     else:
-        nodes.append({"tag": "p", "children": ["Nenhum anime encontrado nos tópicos no momento."]})
+        nodes.append({"tag": "p", "children": ["Nenhum anime cadastrado nos tópicos no momento."]})
 
     print(f"📝 Atualizando a página {PATH_PAGINA} no Telegraph...")
     
