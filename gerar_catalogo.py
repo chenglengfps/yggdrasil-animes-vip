@@ -51,15 +51,29 @@ async def main():
         print(f"❌ Erro ao autenticar session string: {e}")
         return
 
-    print(f"📌 Lendo tópicos do grupo {GROUP_ID}...")
+    print("📌 Localizando o grupo correto...")
+    chat_entity = None
+
+    # Tenta buscar pelo ID direto ou varre os chats da conta
+    try:
+        chat_entity = await client.get_entity(GROUP_ID)
+    except Exception:
+        async for dialog in client.iter_dialogs():
+            if "yggdrasil" in dialog.name.lower() or "vip" in dialog.name.lower():
+                chat_entity = dialog.entity
+                print(f"🎯 Grupo localizado por nome: {dialog.name} (ID: {dialog.id})")
+                break
+
+    if not chat_entity:
+        print("❌ Não foi possível encontrar o grupo no perfil da conta.")
+        await client.disconnect()
+        return
+
+    print(f"✅ Lendo tópicos de: {getattr(chat_entity, 'title', 'Grupo')}")
     animes_encontrados = []
     topicos_unicos = set()
 
     try:
-        chat_entity = await client.get_entity(GROUP_ID)
-        print(f"✅ Grupo encontrado: {getattr(chat_entity, 'title', 'Desconhecido')}")
-        
-        # Método 1: GetForumTopicsRequest
         offset_date = 0
         offset_id = 0
         offset_topic = 0
@@ -89,7 +103,7 @@ async def main():
                 if nome_topico.lower() in ["general", "geral"]:
                     continue
 
-                print(f"🔹 Tópico detectado: {nome_topico}")
+                print(f"🔹 Tópico encontrado: {nome_topico}")
 
                 slug = limpar_nome_para_slug(nome_topico)
                 if not slug:
@@ -107,14 +121,12 @@ async def main():
             offset_date = getattr(ultimo, 'date', 0)
 
     except Exception as e:
-        print(f"❌ Erro ao ler tópicos via API: {e}")
-        await client.disconnect()
-        return
+        print(f"❌ Erro ao ler tópicos: {e}")
 
     await client.disconnect()
 
     total_animes = len(animes_encontrados)
-    print(f"✅ Sucesso! Total de animes/tópicos encontrados: {total_animes}")
+    print(f"📊 Total de animes encontrados: {total_animes}")
 
     nodes = [
         {"tag": "h3", "children": ["Yggdrasil Animes VIP - Catálogo Oficial"]},
@@ -141,7 +153,7 @@ async def main():
     else:
         nodes.append({"tag": "p", "children": ["Nenhum anime cadastrado nos tópicos no momento."]})
 
-    print(f"📝 Atualizando a página {PATH_PAGINA} no Telegraph...")
+    print(f"📝 Enviando dados para a página {PATH_PAGINA} no Telegraph...")
     
     url_telegraph = "https://api.telegra.ph/editPage"
     payload = {
@@ -155,13 +167,10 @@ async def main():
     
     resp = requests.post(url_telegraph, data=payload).json()
     if resp.get("ok"):
-        print("\n" + "="*50)
-        print(f"🎉 CATÁLOGO ATUALIZADO COM SUCESSO!")
-        print(f"👉 Link oficial: {resp['result']['url']}")
-        print("="*50 + "\n")
+        print(f"🎉 Catálogo atualizado com sucesso no link oficial!")
         salvar_cache(animes_encontrados)
     else:
-        print(f"❌ Erro ao atualizar Telegraph: {resp}")
+        print(f"❌ Erro Telegraph: {resp}")
 
 if __name__ == "__main__":
     asyncio.run(main())
