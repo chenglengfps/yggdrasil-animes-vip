@@ -5,14 +5,12 @@ import asyncio
 import requests
 import emoji
 from dotenv import load_dotenv
-from telethon import TelegramClient, functions
-from telethon.tl.types import MessageActionTopicCreate
-from telethon.sessions import StringSession
+from pyrogram import Client
 
 load_dotenv()
 
-API_ID = os.getenv("API_ID", "28196030")
-API_HASH = os.getenv("API_HASH", "db0ec388f4ff19cbb5ce0ce06e117566")
+API_ID = os.getenv("API_ID")
+API_HASH = os.getenv("API_HASH")
 TELEGRAPH_TOKEN = os.getenv("TELEGRAPH_TOKEN")
 SESSION_STRING = os.getenv("SESSION_STRING")
 
@@ -20,12 +18,10 @@ if API_ID:
     API_ID = int(API_ID)
 
 if SESSION_STRING:
-    SESSION_STRING = SESSION_STRING.strip().strip("'").strip('"')
+    SESSION_STRING = SESSION_STRING.strip().strip("'").strip('"').replace("\n", "").replace("\r", "")
 
 TARGET_GROUP_ID = -1004388024164
 BOT_TARGET = "Quinellaadm_bot"
-CACHE_FILE = "animes_cache.json"
-# URL exata do catálogo que você enviou: https://telegra.ph/Lista-de-animes-09-14
 PATH_PAGINA = "Lista-de-animes-09-14"
 
 def limpar_nome_para_slug(texto):
@@ -34,80 +30,50 @@ def limpar_nome_para_slug(texto):
     slug = re.sub(r'_+', '_', slug).strip('_')
     return slug
 
-def obter_token_telegraph():
-    if TELEGRAPH_TOKEN and len(TELEGRAPH_TOKEN) > 10:
-        return TELEGRAPH_TOKEN
-    resp = requests.get("https://api.telegra.ph/createAccount", params={
-        "short_name": "Yggdrasil",
-        "author_name": "Yggdrasil VIP"
-    }).json()
-    if resp.get("ok"):
-        return resp["result"]["access_token"]
-    return TELEGRAPH_TOKEN
-
 async def main():
     if not API_ID or not API_HASH or not SESSION_STRING:
-        print("❌ Credenciais ausentes/inválidas!")
+        print("❌ Credenciais API_ID, API_HASH ou SESSION_STRING ausentes!")
         return
 
-    print("🔄 Conectando à Telegram API via Telethon...")
-    client = TelegramClient(StringSession(SESSION_STRING), API_ID, API_HASH)
-    await client.start()
-
-    print(f"📌 Acessando grupo: {TARGET_GROUP_ID}...")
+    print("🔄 Conectando à Telegram API via Pyrogram...")
     try:
-        chat_entity = await client.get_entity(TARGET_GROUP_ID)
-    except Exception:
-        chat_entity = None
-        async for dialog in client.iter_dialogs():
-            if dialog.id == TARGET_GROUP_ID:
-                chat_entity = dialog.entity
-                break
-
-    if not chat_entity:
-        print("❌ Grupo não localizado.")
-        await client.disconnect()
+        app = Client(
+            "yggdrasil_userbot",
+            api_id=API_ID,
+            api_hash=API_HASH,
+            session_string=SESSION_STRING,
+            in_memory=True
+        )
+    except Exception as err:
+        print(f"❌ Erro na criacao do cliente Pyrogram (String Session Invalida): {err}")
         return
-
-    print(f"🎯 Grupo carregado: {getattr(chat_entity, 'title', 'Fórum')}")
-    
-    dict_animes = {}
-
-    # Método 1: GetForumTopicsRequest
-    try:
-        resultado = await client(functions.channels.GetForumTopicsRequest(
-            channel=chat_entity,
-            offset_date=0,
-            offset_id=0,
-            offset_topic=0,
-            limit=100,
-            q=''
-        ))
-        if getattr(resultado, 'topics', None):
-            for topic in resultado.topics:
-                nome = getattr(topic, 'title', '').strip()
-                if nome and nome.lower() not in ["general", "geral"]:
-                    dict_animes[nome] = True
-    except Exception as e:
-        print(f"⚠️ Erro M1: {e}")
-
-    # Método 2: Varredura de Mensagens
-    try:
-        async for msg in client.iter_messages(chat_entity, limit=1000):
-            if isinstance(getattr(msg, 'action', None), MessageActionTopicCreate):
-                nome_topico = msg.action.title.strip()
-                if nome_topico and nome_topico.lower() not in ["general", "geral"]:
-                    dict_animes[nome_topico] = True
-    except Exception as e:
-        print(f"⚠️ Erro M2: {e}")
-
-    await client.disconnect()
 
     animes_encontrados = []
-    for nome_topico in dict_animes.keys():
-        slug = limpar_nome_para_slug(nome_topico) or "anime"
-        link_bot = f"https://t.me/{BOT_TARGET}?start={slug}"
-        animes_encontrados.append({"nome": nome_topico, "link": link_bot})
+    topicos_unicos = set()
+
+    try:
+        async with app:
+            print(f"📌 Buscando tópicos do grupo: {TARGET_GROUP_ID}...")
+            async for topic in app.get_forum_topics(TARGET_GROUP_ID):
+                nome_topico = getattr(topic, 'title', '').strip()
+                topic_id = getattr(topic, 'id', None)
+
+                if not nome_topico or topic_id in topicos_unicos:
+                    continue
+
+                topicos_unicos.add(topic_id)
+
+                if nome_topico.lower() in ["general", "geral"]:
+                    continue
+
+                print(f"🔹 Tópico encontrado: {nome_topico}")
+
+                slug = limpar_nome_para_slug(nome_topico) or "anime"
+                link_bot = f"https://t.me/{BOT_TARGET}?start={slug}"
+                animes_encontrados.append({"nome": nome_topico, "link": link_bot})
+
+    except Exception as e:
+        print(f"❌ Erro de execucao no Pyrogram: {e}")
 
     total_animes = len(animes_encontrados)
     print(f"📊 Total de animes/tópicos encontrados: {total_animes}")
@@ -137,12 +103,10 @@ async def main():
     else:
         nodes.append({"tag": "p", "children": ["Nenhum anime cadastrado nos tópicos no momento."]})
 
-    token_ativo = obter_token_telegraph()
-    print(f"📝 Atualizando página '{PATH_PAGINA}' no Telegraph...")
-    
+    print(f"📝 Atualizando a página '{PATH_PAGINA}' no Telegraph...")
     url_telegraph = "https://api.telegra.ph/editPage"
     payload = {
-        "access_token": token_ativo,
+        "access_token": TELEGRAPH_TOKEN,
         "path": PATH_PAGINA,
         "title": "Lista de animes",
         "author_name": "Yggdrasil VIP",
@@ -154,11 +118,7 @@ async def main():
     if resp.get("ok"):
         print(f"🎉 CATÁLOGO ATUALIZADO COM SUCESSO! Link: {resp['result']['url']}")
     else:
-        url_create = "https://api.telegra.ph/createPage"
-        payload["title"] = "Lista de animes"
-        resp_create = requests.post(url_create, data=payload).json()
-        if resp_create.get("ok"):
-            print(f"🎉 CATÁLOGO PUBLICADO COM SUCESSO! Link: {resp_create['result']['url']}")
+        print(f"⚠️ Erro ao atualizar Telegraph: {resp}")
 
 if __name__ == "__main__":
     asyncio.run(main())
