@@ -6,6 +6,7 @@ import requests
 import emoji
 from dotenv import load_dotenv
 from telethon import TelegramClient, functions
+from telethon.tl.types import MessageActionTopicCreate
 from telethon.sessions import StringSession
 
 load_dotenv()
@@ -21,7 +22,6 @@ if API_ID:
 if SESSION_STRING:
     SESSION_STRING = SESSION_STRING.strip().strip("'").strip('"')
 
-# ID EXATO E DEFINITIVO DO SEU GRUPO DE FÓRUM
 TARGET_GROUP_ID = -1004388024164
 BOT_TARGET = "Quinellaadm_bot"
 CACHE_FILE = "animes_cache.json"
@@ -36,7 +36,6 @@ def limpar_nome_para_slug(texto):
 def obter_token_telegraph():
     if TELEGRAPH_TOKEN and len(TELEGRAPH_TOKEN) > 10:
         return TELEGRAPH_TOKEN
-    print("⚠️ Token do Telegraph inválido/ausente. Criando conta temporária...")
     resp = requests.get("https://api.telegra.ph/createAccount", params={
         "short_name": "Yggdrasil",
         "author_name": "Yggdrasil VIP"
@@ -47,94 +46,76 @@ def obter_token_telegraph():
 
 async def main():
     if not API_ID or not API_HASH or not SESSION_STRING:
-        print("❌ Credenciais API_ID, API_HASH ou SESSION_STRING ausentes/inválidas!")
+        print("❌ Credenciais ausentes/inválidas!")
         return
 
     print("🔄 Conectando à Telegram API via Telethon...")
-    
-    try:
-        client = TelegramClient(StringSession(SESSION_STRING), API_ID, API_HASH)
-        await client.start()
-    except Exception as e:
-        print(f"❌ Erro ao autenticar session string: {e}")
-        return
+    client = TelegramClient(StringSession(SESSION_STRING), API_ID, API_HASH)
+    await client.start()
 
-    print(f"📌 Acessando diretamente o grupo ID: {TARGET_GROUP_ID}...")
-    chat_entity = None
-
+    print(f"📌 Acessando grupo: {TARGET_GROUP_ID}...")
     try:
         chat_entity = await client.get_entity(TARGET_GROUP_ID)
-        print(f"🎯 Grupo correto carregado: {getattr(chat_entity, 'title', 'Fórum')}")
-    except Exception as e:
-        print(f"⚠️ Erro ao obter entidade por ID direto ({e}). Varrendo lista de chats...")
+    except Exception:
+        chat_entity = None
         async for dialog in client.iter_dialogs():
             if dialog.id == TARGET_GROUP_ID:
                 chat_entity = dialog.entity
-                print(f"🎯 Grupo localizado na lista: {dialog.name}")
                 break
 
     if not chat_entity:
-        print("❌ Não foi possível encontrar o grupo com o ID -1004388024164.")
+        print("❌ Grupo não localizado.")
         await client.disconnect()
         return
 
-    animes_encontrados = []
-    topicos_unicos = set()
+    print(f"🎯 Grupo carregado: {getattr(chat_entity, 'title', 'Fórum')}")
+    
+    dict_animes = {}
 
+    # Método 1: GetForumTopicsRequest
     try:
-        offset_date = 0
-        offset_id = 0
-        offset_topic = 0
-
-        while True:
-            resultado = await client(functions.channels.GetForumTopicsRequest(
-                channel=chat_entity,
-                offset_date=offset_date,
-                offset_id=offset_id,
-                offset_topic=offset_topic,
-                limit=100,
-                q=''
-            ))
-
-            if not getattr(resultado, 'topics', None):
-                break
-
+        resultado = await client(functions.channels.GetForumTopicsRequest(
+            channel=chat_entity,
+            offset_date=0,
+            offset_id=0,
+            offset_topic=0,
+            limit=100,
+            q=''
+        ))
+        if getattr(resultado, 'topics', None):
             for topic in resultado.topics:
-                nome_topico = getattr(topic, 'title', '').strip()
-                topic_id = getattr(topic, 'id', None)
-
-                if not nome_topico or topic_id in topicos_unicos:
-                    continue
-                
-                topicos_unicos.add(topic_id)
-
-                if nome_topico.lower() in ["general", "geral"]:
-                    continue
-
-                print(f"🔹 Anime/Tópico encontrado: {nome_topico}")
-
-                slug = limpar_nome_para_slug(nome_topico)
-                if not slug:
-                    slug = "anime"
-
-                link_bot = f"https://t.me/{BOT_TARGET}?start={slug}"
-                animes_encontrados.append({"nome": nome_topico, "link": link_bot})
-
-            if len(resultado.topics) < 100:
-                break
-                
-            ultimo = resultado.topics[-1]
-            offset_topic = ultimo.id
-            offset_id = getattr(ultimo, 'top_message', 0)
-            offset_date = getattr(ultimo, 'date', 0)
-
+                nome = getattr(topic, 'title', '').strip()
+                if nome and nome.lower() not in ["general", "geral"]:
+                    dict_animes[nome] = True
     except Exception as e:
-        print(f"❌ Erro ao ler tópicos do fórum: {e}")
+        print(f"⚠️ Erro M1: {e}")
+
+    # Método 2 (Varredura de Ações de Criação de Tópicos nas Mensagens)
+    print("🔄 Varrendo mensagens para capturar nomes dos tópicos criados...")
+    try:
+        async for msg in client.iter_messages(chat_entity, limit=1000):
+            if isinstance(getattr(msg, 'action', None), MessageActionTopicCreate):
+                nome_topico = msg.action.title.strip()
+                if nome_topico and nome_topico.lower() not in ["general", "geral"]:
+                    dict_animes[nome_topico] = True
+            elif getattr(msg, 'reply_to', None):
+                reply_info = msg.reply_to
+                if getattr(reply_info, 'forum_topic', False):
+                    # Captura mensagens que pertencem a tópicos
+                    pass
+    except Exception as e:
+        print(f"⚠️ Erro M2: {e}")
 
     await client.disconnect()
 
+    animes_encontrados = []
+    for nome_topico in dict_animes.keys():
+        slug = limpar_nome_para_slug(nome_topico) or "anime"
+        link_bot = f"https://t.me/{BOT_TARGET}?start={slug}"
+        animes_encontrados.append({"nome": nome_topico, "link": link_bot})
+
     total_animes = len(animes_encontrados)
-    print(f"📊 Total de animes encontrados: {total_animes}")
+    print(f"📊 Total de animes/tópicos encontrados: {total_animes}")
 
     nodes = [
         {"tag": "h3", "children": ["Yggdrasil Animes VIP - Catálogo Oficial"]},
@@ -176,16 +157,13 @@ async def main():
     
     resp = requests.post(url_telegraph, data=payload).json()
     if resp.get("ok"):
-        print(f"🎉 CATÁLOGO ATUALIZADO COM SUCESSO!")
-        print(f"👉 Link oficial: {resp['result']['url']}")
+        print(f"🎉 CATÁLOGO ATUALIZADO COM SUCESSO! Link: {resp['result']['url']}")
     else:
-        print(f"⚠️ Erro ao atualizar página existente: {resp.get('error')}. Tentando criar/atualizar nova página...")
         url_create = "https://api.telegra.ph/createPage"
         payload["title"] = "Yggdrasil Animes VIP"
         resp_create = requests.post(url_create, data=payload).json()
         if resp_create.get("ok"):
-            print(f"🎉 CATÁLOGO PUBLICADO COM SUCESSO!")
-            print(f"👉 Novo Link: {resp_create['result']['url']}")
+            print(f"🎉 CATÁLOGO PUBLICADO COM SUCESSO! Link: {resp_create['result']['url']}")
 
 if __name__ == "__main__":
     asyncio.run(main())
