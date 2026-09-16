@@ -52,11 +52,17 @@ async def main():
     topicos_unicos = set()
     maior_topic_id = -1
 
+    # Nomes/palavras-chave de tópicos que devem ser ignorados
+    IGNORAR_TOPICOS = [
+        "general", "geral", "bate-papo", "sugestões", "sugestoes", 
+        "bate papo", "chat", "regras", "avisos"
+    ]
+
     try:
         async with app:
-            print(f"📌 Buscando TODOS os tópicos do grupo (com paginação): {TARGET_GROUP_ID}...")
+            print(f"📌 Buscando TODOS os tópicos do grupo: {TARGET_GROUP_ID}...")
             
-            # Percorre todos os tópicos sem limite de paginação
+            # Percorre todos os tópicos sem limite usando o iterador nativo do Hydrogram
             async for topic in app.get_forum_topics(TARGET_GROUP_ID):
                 nome_topico = getattr(topic, 'title', '').strip()
                 topic_id = getattr(topic, 'id', None)
@@ -64,12 +70,15 @@ async def main():
                 if not nome_topico or topic_id in topicos_unicos:
                     continue
 
-                topicos_unicos.add(topic_id)
-
-                if nome_topico.lower() in ["general", "geral", "bate-papo / sugestões", "bate-papo", "sugestões"]:
+                # Remove emojis para validar se é um tópico de bate-papo/geral a ser ignorado
+                nome_limpo = emoji.replace_emoji(nome_topico, replace='').strip().lower()
+                
+                if any(termo in nome_limpo for termo in IGNORAR_TOPICOS):
+                    print(f"🚫 Ignorando tópico geral/meta: {nome_topico}")
                     continue
 
-                # Guarda o ID do tópico mais recente (geralmente os IDs mais altos são os mais novos)
+                topicos_unicos.add(topic_id)
+
                 if topic_id and topic_id > maior_topic_id:
                     maior_topic_id = topic_id
 
@@ -88,7 +97,6 @@ async def main():
     total_animes = len(animes_encontrados)
     print(f"📊 Total de animes/tópicos encontrados: {total_animes}")
 
-    # Estrutura do Telegraph limpa (sem subtítulos que acionem IA de resumo)
     nodes = [
         {"tag": "h3", "children": ["Yggdrasil Animes VIP - Catálogo Oficial"]},
         {"tag": "p", "children": [f"📊 Total de animes disponíveis: {total_animes}"]},
@@ -97,7 +105,6 @@ async def main():
     ]
 
     lista_items = []
-    # Ordena os animes alfabeticamente para exibição no catálogo
     for anime in sorted(animes_encontrados, key=lambda x: x["nome"].lower()):
         e_novo = (anime["id"] == maior_topic_id)
         
@@ -109,7 +116,6 @@ async def main():
             }
         ]
 
-        # Se for o último tópico adicionado ao grupo, destaca com '🆕 NOVO'
         if e_novo:
             children_elements.append(" ")
             children_elements.append({
