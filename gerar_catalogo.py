@@ -28,10 +28,8 @@ CACHE_FILE = "animes_cache.json"
 PATH_PAGINA = "Yggdrasil-Animes-VIP-09-15"
 
 def limpar_nome_para_slug(texto):
-    # Remove emojis e caracteres especiais para criar a palavra-chave do bot
     texto_sem_emoji = emoji.replace_emoji(texto, replace='')
     slug = re.sub(r'[^a-zA-Z0-9_]', '_', texto_sem_emoji.strip().lower())
-    # Remove underscores duplicados/sobrando
     slug = re.sub(r'_+', '_', slug).strip('_')
     return slug
 
@@ -55,10 +53,13 @@ async def main():
 
     print(f"📌 Lendo tópicos do grupo {GROUP_ID}...")
     animes_encontrados = []
+    topicos_unicos = set()
 
     try:
         chat_entity = await client.get_entity(GROUP_ID)
+        print(f"✅ Grupo encontrado: {getattr(chat_entity, 'title', 'Desconhecido')}")
         
+        # Método 1: GetForumTopicsRequest
         offset_date = 0
         offset_id = 0
         offset_topic = 0
@@ -73,17 +74,22 @@ async def main():
                 q=''
             ))
 
-            if not resultado.topics:
+            if not getattr(resultado, 'topics', None):
                 break
 
             for topic in resultado.topics:
                 nome_topico = getattr(topic, 'title', '').strip()
-                if not nome_topico:
+                topic_id = getattr(topic, 'id', None)
+
+                if not nome_topico or topic_id in topicos_unicos:
                     continue
                 
-                # Ignora tópico "General" / "Geral"
+                topicos_unicos.add(topic_id)
+
                 if nome_topico.lower() in ["general", "geral"]:
                     continue
+
+                print(f"🔹 Tópico detectado: {nome_topico}")
 
                 slug = limpar_nome_para_slug(nome_topico)
                 if not slug:
