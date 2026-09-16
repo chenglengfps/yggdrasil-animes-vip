@@ -12,12 +12,16 @@ load_dotenv()
 
 API_ID = os.getenv("API_ID", "28196030")
 API_HASH = os.getenv("API_HASH", "db0ec388f4ff19cbb5ce0ce06e117566")
-BOT_TOKEN = os.getenv("BOT_TOKEN", "7652023850:AAFg09BA7-Detoauqk3GOR2_w2_hMWkvVc0")
-TELEGRAPH_TOKEN = os.getenv("TELEGRAPH_TOKEN", "f7bf78e9c636967eac2f4830d461351dafaccec9594b053a54d1d6504eb3")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+TELEGRAPH_TOKEN = os.getenv("TELEGRAPH_TOKEN")
 SESSION_STRING = os.getenv("SESSION_STRING")
 
 if API_ID:
     API_ID = int(API_ID)
+
+# Limpa espacos, aspas extras e quebras de linha da SESSION_STRING
+if SESSION_STRING:
+    SESSION_STRING = SESSION_STRING.strip().strip("'").strip('"')
 
 GROUP_ID = -1004388024164
 BOT_TARGET = "Quinellaadm_bot"
@@ -32,18 +36,18 @@ def salvar_cache(lista_animes):
         json.dump(lista_animes, f, ensure_ascii=False, indent=2)
 
 async def main():
-    if not API_ID or not API_HASH:
-        print("❌ Credenciais API_ID / API_HASH não encontradas!")
+    if not API_ID or not API_HASH or not SESSION_STRING:
+        print("❌ Credenciais API_ID, API_HASH ou SESSION_STRING ausentes/invalidas!")
         return
 
     print("🔄 Conectando à Telegram API via Telethon...")
     
-    if SESSION_STRING:
+    try:
         client = TelegramClient(StringSession(SESSION_STRING), API_ID, API_HASH)
-    else:
-        client = TelegramClient('sessao_userbot', API_ID, API_HASH)
-
-    await client.start()
+        await client.start()
+    except Exception as e:
+        print(f"❌ Erro ao autenticar session string: {e}")
+        return
 
     print(f"📌 Lendo tópicos do grupo {GROUP_ID}...")
     animes_encontrados = []
@@ -51,7 +55,6 @@ async def main():
     try:
         chat_entity = await client.get_entity(GROUP_ID)
         
-        # Chama a função nativa do Telethon para obter tópicos do fórum
         resultado = await client(functions.channels.GetForumTopicsRequest(
             channel=chat_entity,
             offset_date=0,
