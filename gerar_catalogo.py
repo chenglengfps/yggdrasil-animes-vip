@@ -45,7 +45,7 @@ async def main():
             in_memory=True
         )
     except Exception as err:
-        print(f"❌ Erro na criacao do cliente Hydrogram: {err}")
+        print(f"❌ Erro na criação do cliente Hydrogram: {err}")
         return
 
     animes_encontrados = []
@@ -73,7 +73,7 @@ async def main():
                 animes_encontrados.append({"nome": nome_topico, "link": link_bot})
 
     except Exception as e:
-        print(f"❌ Erro de execucao no Hydrogram: {e}")
+        print(f"❌ Erro de execução no Hydrogram: {e}")
 
     total_animes = len(animes_encontrados)
     print(f"📊 Total de animes/tópicos encontrados: {total_animes}")
@@ -86,7 +86,7 @@ async def main():
     ]
 
     lista_items = []
-    for anime in sorted(animes_encontrados, key=x: x["nome"].lower()):
+    for anime in sorted(animes_encontrados, key=lambda x: x["nome"].lower()):
         lista_items.append({
             "tag": "li",
             "children": [
@@ -103,7 +103,7 @@ async def main():
     else:
         nodes.append({"tag": "p", "children": ["Nenhum anime cadastrado nos tópicos no momento."]})
 
-    print(f"📝 Atualizando/Criando página no Telegraph...")
+    print("📝 Atualizando/Criando página no Telegraph...")
     url_telegraph = "https://api.telegra.ph/editPage"
     payload = {
         "access_token": TELEGRAPH_TOKEN,
@@ -116,7 +116,6 @@ async def main():
     
     resp = requests.post(url_telegraph, data=payload).json()
     
-    # Se der erro de permissão (PAGE_ACCESS_DENIED), cria uma nova página com o token atual
     if not resp.get("ok") and resp.get("error") == "PAGE_ACCESS_DENIED":
         print("⚠️ Permissão negada no path antigo. Criando nova página no Telegraph...")
         url_create = "https://api.telegra.ph/createPage"
