@@ -1,4 +1,5 @@
-telethon
+pyrogram
+tgcrypto
 requests
-emoji
 python-dotenv
+emoji
