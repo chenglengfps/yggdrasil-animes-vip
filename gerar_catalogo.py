@@ -22,7 +22,6 @@ if SESSION_STRING:
 
 TARGET_GROUP_ID = -1004388024164
 BOT_TARGET = "Quinellaadm_bot"
-# Path fixo do catálogo no Telegraph
 PATH_PAGINA = "Lista-de-animes-09-16-4"
 
 def limpar_nome_para_slug(texto):
@@ -51,10 +50,13 @@ async def main():
 
     animes_encontrados = []
     topicos_unicos = set()
+    maior_topic_id = -1
 
     try:
         async with app:
-            print(f"📌 Buscando tópicos do grupo: {TARGET_GROUP_ID}...")
+            print(f"📌 Buscando TODOS os tópicos do grupo (com paginação): {TARGET_GROUP_ID}...")
+            
+            # Percorre todos os tópicos sem limite de paginação
             async for topic in app.get_forum_topics(TARGET_GROUP_ID):
                 nome_topico = getattr(topic, 'title', '').strip()
                 topic_id = getattr(topic, 'id', None)
@@ -64,14 +66,21 @@ async def main():
 
                 topicos_unicos.add(topic_id)
 
-                if nome_topico.lower() in ["general", "geral"]:
+                if nome_topico.lower() in ["general", "geral", "bate-papo / sugestões", "bate-papo", "sugestões"]:
                     continue
 
-                print(f"🔹 Tópico encontrado: {nome_topico}")
+                # Guarda o ID do tópico mais recente (geralmente os IDs mais altos são os mais novos)
+                if topic_id and topic_id > maior_topic_id:
+                    maior_topic_id = topic_id
 
                 slug = limpar_nome_para_slug(nome_topico) or "anime"
                 link_bot = f"https://t.me/{BOT_TARGET}?start={slug}"
-                animes_encontrados.append({"nome": nome_topico, "link": link_bot})
+                
+                animes_encontrados.append({
+                    "id": topic_id,
+                    "nome": nome_topico, 
+                    "link": link_bot
+                })
 
     except Exception as e:
         print(f"❌ Erro de execução no Hydrogram: {e}")
@@ -79,6 +88,7 @@ async def main():
     total_animes = len(animes_encontrados)
     print(f"📊 Total de animes/tópicos encontrados: {total_animes}")
 
+    # Estrutura do Telegraph limpa (sem subtítulos que acionem IA de resumo)
     nodes = [
         {"tag": "h3", "children": ["Yggdrasil Animes VIP - Catálogo Oficial"]},
         {"tag": "p", "children": [f"📊 Total de animes disponíveis: {total_animes}"]},
@@ -87,16 +97,29 @@ async def main():
     ]
 
     lista_items = []
+    # Ordena os animes alfabeticamente para exibição no catálogo
     for anime in sorted(animes_encontrados, key=lambda x: x["nome"].lower()):
+        e_novo = (anime["id"] == maior_topic_id)
+        
+        children_elements = [
+            {
+                "tag": "a",
+                "attrs": {"href": anime["link"]},
+                "children": [anime["nome"]]
+            }
+        ]
+
+        # Se for o último tópico adicionado ao grupo, destaca com '🆕 NOVO'
+        if e_novo:
+            children_elements.append(" ")
+            children_elements.append({
+                "tag": "b",
+                "children": ["🆕 NOVO"]
+            })
+
         lista_items.append({
             "tag": "li",
-            "children": [
-                {
-                    "tag": "a",
-                    "attrs": {"href": anime["link"]},
-                    "children": [anime["nome"]]
-                }
-            ]
+            "children": children_elements
         })
 
     if lista_items:
@@ -117,7 +140,6 @@ async def main():
     
     resp = requests.post(url_telegraph, data=payload).json()
     
-    # Se por algum motivo o path não for encontrado, faz o fallback seguro para criação
     if not resp.get("ok") and resp.get("error") in ["PAGE_ACCESS_DENIED", "PATH_INVALID"]:
         print("⚠️ Erro ao editar path padrão. Tentando recriar página...")
         url_create = "https://api.telegra.ph/createPage"
