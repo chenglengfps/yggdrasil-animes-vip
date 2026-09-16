@@ -22,7 +22,6 @@ if API_ID:
 if SESSION_STRING:
     SESSION_STRING = SESSION_STRING.strip().strip("'").strip('"')
 
-GROUP_ID = -1004388024164
 BOT_TARGET = "Quinellaadm_bot"
 CACHE_FILE = "animes_cache.json"
 PATH_PAGINA = "Yggdrasil-Animes-VIP-09-15"
@@ -51,28 +50,27 @@ async def main():
         print(f"❌ Erro ao autenticar session string: {e}")
         return
 
-    print("📌 Localizando o grupo correto...")
+    print("🔍 Varrendo todos os grupos da sua conta para encontrar 'Yggdrasil Animes VIP'...")
     chat_entity = None
 
-    # Tenta buscar pelo ID direto ou varre os chats da conta
-    try:
-        chat_entity = await client.get_entity(GROUP_ID)
-    except Exception:
-        async for dialog in client.iter_dialogs():
-            if "yggdrasil" in dialog.name.lower() or "vip" in dialog.name.lower():
-                chat_entity = dialog.entity
-                print(f"🎯 Grupo localizado por nome: {dialog.name} (ID: {dialog.id})")
-                break
+    async for dialog in client.iter_dialogs():
+        nome_chat = dialog.name or ""
+        # Procura por variações do nome do seu grupo
+        if "yggdrasil" in nome_chat.lower():
+            chat_entity = dialog.entity
+            print(f"🎯 Grupo localizado com sucesso: '{dialog.name}' (ID: {dialog.id})")
+            break
 
     if not chat_entity:
-        print("❌ Não foi possível encontrar o grupo no perfil da conta.")
+        print("❌ Não foi possível localizar o grupo 'Yggdrasil' nos chats da sua conta.")
         await client.disconnect()
         return
 
-    print(f"✅ Lendo tópicos de: {getattr(chat_entity, 'title', 'Grupo')}")
+    print(f"📌 Lendo tópicos do grupo '{getattr(chat_entity, 'title', 'Yggdrasil')}':")
     animes_encontrados = []
     topicos_unicos = set()
 
+    # Método 1: GetForumTopicsRequest
     try:
         offset_date = 0
         offset_id = 0
@@ -103,7 +101,7 @@ async def main():
                 if nome_topico.lower() in ["general", "geral"]:
                     continue
 
-                print(f"🔹 Tópico encontrado: {nome_topico}")
+                print(f"  🔹 Tópico encontrado: {nome_topico}")
 
                 slug = limpar_nome_para_slug(nome_topico)
                 if not slug:
@@ -121,12 +119,25 @@ async def main():
             offset_date = getattr(ultimo, 'date', 0)
 
     except Exception as e:
-        print(f"❌ Erro ao ler tópicos: {e}")
+        print(f"⚠️ Aviso ao ler fórum diretamente: {e}")
+
+    # Método 2 (Fallback): Se 0 tópicos foram achados, varre mensagens recentes para pegar tópicos
+    if len(animes_encontrados) == 0:
+        print("🔄 Tentando método alternativo (varredura de mensagens com tópicos)...")
+        try:
+            async for msg in client.iter_messages(chat_entity, limit=300):
+                if getattr(msg, 'reply_to', None) and getattr(msg.reply_to, 'forum_topic', False):
+                    # Tenta extrair dados do tópico através da mensagem
+                    topic_id = msg.reply_to.reply_to_top_id
+                    if topic_id and topic_id not in topicos_unicos:
+                        topicos_unicos.add(topic_id)
+        except Exception as e:
+            print(f"⚠️ Aviso no fallback de mensagens: {e}")
 
     await client.disconnect()
 
     total_animes = len(animes_encontrados)
-    print(f"📊 Total de animes encontrados: {total_animes}")
+    print(f"📊 Total de animes/tópicos encontrados: {total_animes}")
 
     nodes = [
         {"tag": "h3", "children": ["Yggdrasil Animes VIP - Catálogo Oficial"]},
@@ -153,7 +164,7 @@ async def main():
     else:
         nodes.append({"tag": "p", "children": ["Nenhum anime cadastrado nos tópicos no momento."]})
 
-    print(f"📝 Enviando dados para a página {PATH_PAGINA} no Telegraph...")
+    print(f"📝 Atualizando a página '{PATH_PAGINA}' no Telegraph...")
     
     url_telegraph = "https://api.telegra.ph/editPage"
     payload = {
@@ -167,10 +178,10 @@ async def main():
     
     resp = requests.post(url_telegraph, data=payload).json()
     if resp.get("ok"):
-        print(f"🎉 Catálogo atualizado com sucesso no link oficial!")
+        print(f"🎉 CATÁLOGO ATUALIZADO COM SUCESSO! Link: {resp['result']['url']}")
         salvar_cache(animes_encontrados)
     else:
-        print(f"❌ Erro Telegraph: {resp}")
+        print(f"❌ Erro ao atualizar Telegraph: {resp}")
 
 if __name__ == "__main__":
     asyncio.run(main())
