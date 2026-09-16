@@ -10,11 +10,10 @@ from telethon.sessions import StringSession
 
 load_dotenv()
 
-# Credenciais carregadas do .env (local) ou dos GitHub Secrets (nuvem)
 API_ID = os.getenv("API_ID", "28196030")
 API_HASH = os.getenv("API_HASH", "db0ec388f4ff19cbb5ce0ce06e117566")
 BOT_TOKEN = os.getenv("BOT_TOKEN", "7652023850:AAFg09BA7-Detoauqk3GOR2_w2_hMWkvVc0")
-TELEGRAPH_TOKEN = os.getenv("TELEGRAPH_TOKEN", "1728a95864f11a6f0eeb66046f2ed0c2d70e3f412f7de2a26b48dc169412")
+TELEGRAPH_TOKEN = os.getenv("TELEGRAPH_TOKEN", "f7bf78e9c636967eac2f4830d461351dafaccec9594b053a54d1d6504eb3")
 SESSION_STRING = os.getenv("SESSION_STRING")
 
 if API_ID:
@@ -52,6 +51,7 @@ async def main():
     try:
         chat_entity = await client.get_entity(GROUP_ID)
         
+        # Chama a função nativa do Telethon para obter tópicos do fórum
         resultado = await client(functions.channels.GetForumTopicsRequest(
             channel=chat_entity,
             offset_date=0,
