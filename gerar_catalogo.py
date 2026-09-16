@@ -22,7 +22,8 @@ if SESSION_STRING:
 
 TARGET_GROUP_ID = -1004388024164
 BOT_TARGET = "Quinellaadm_bot"
-PATH_PAGINA = "Lista-de-animes-09-14"
+# Path fixo do catálogo no Telegraph
+PATH_PAGINA = "Lista-de-animes-09-16-4"
 
 def limpar_nome_para_slug(texto):
     texto_sem_emoji = emoji.replace_emoji(texto, replace='')
@@ -103,7 +104,7 @@ async def main():
     else:
         nodes.append({"tag": "p", "children": ["Nenhum anime cadastrado nos tópicos no momento."]})
 
-    print("📝 Atualizando/Criando página no Telegraph...")
+    print(f"📝 Atualizando página fixa no Telegraph ({PATH_PAGINA})...")
     url_telegraph = "https://api.telegra.ph/editPage"
     payload = {
         "access_token": TELEGRAPH_TOKEN,
@@ -116,8 +117,9 @@ async def main():
     
     resp = requests.post(url_telegraph, data=payload).json()
     
-    if not resp.get("ok") and resp.get("error") == "PAGE_ACCESS_DENIED":
-        print("⚠️ Permissão negada no path antigo. Criando nova página no Telegraph...")
+    # Se por algum motivo o path não for encontrado, faz o fallback seguro para criação
+    if not resp.get("ok") and resp.get("error") in ["PAGE_ACCESS_DENIED", "PATH_INVALID"]:
+        print("⚠️ Erro ao editar path padrão. Tentando recriar página...")
         url_create = "https://api.telegra.ph/createPage"
         payload_create = {
             "access_token": TELEGRAPH_TOKEN,
