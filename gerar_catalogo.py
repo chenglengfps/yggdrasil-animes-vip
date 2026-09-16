@@ -50,6 +50,7 @@ async def main():
 
     animes_encontrados = []
     topicos_unicos = set()
+    topicos_dict = {}
     maior_topic_id = -1
 
     IGNORAR_TOPICOS = [
@@ -59,56 +60,59 @@ async def main():
 
     try:
         async with app:
-            print(f"📌 Buscando tópicos via get_forum_topics...")
-            async for topic in app.get_forum_topics(TARGET_GROUP_ID):
-                nome_topico = getattr(topic, 'title', '').strip()
-                topic_id = getattr(topic, 'id', None)
+            print(f"📌 Varrendo historico do grupo para extrair TODOS os topicos...")
+            
+            # Varre o histórico de mensagens para pegar os tópicos de todas as postagens
+            async for msg in app.get_chat_history(TARGET_GROUP_ID, limit=3000):
+                # Tenta pegar informacoes de forum/topico da mensagem
+                reply_to = getattr(msg, "reply_to_message", None)
+                thread_id = getattr(msg, "message_thread_id", None)
+                
+                nome_topico = None
+                topic_id = thread_id
 
-                if not nome_topico or not topic_id or topic_id in topicos_unicos:
-                    continue
+                # Se for mensagem de criacao de topico
+                if msg.service and hasattr(msg, "forum_topic_created") and msg.forum_topic_created:
+                    nome_topico = msg.forum_topic_created.title
+                    topic_id = msg.id
 
-                nome_limpo = emoji.replace_emoji(nome_topico, replace='').strip().lower()
-                if any(termo in nome_limpo for termo in IGNORAR_TOPICOS):
-                    continue
+                # Se a mensagem pertence a um topico e ainda nao temos o nome dele
+                if topic_id and topic_id not in topicos_unicos:
+                    if not nome_topico and reply_to and hasattr(reply_to, "forum_topic_created") and reply_to.forum_topic_created:
+                        nome_topico = reply_to.forum_topic_created.title
 
-                topicos_unicos.add(topic_id)
+                if topic_id and nome_topico and topic_id not in topicos_unicos:
+                    nome_limpo = emoji.replace_emoji(nome_topico, replace='').strip().lower()
+                    if any(termo in nome_limpo for termo in IGNORAR_TOPICOS):
+                        continue
 
-                if topic_id > maior_topic_id:
-                    maior_topic_id = topic_id
+                    topicos_unicos.add(topic_id)
+                    topicos_dict[topic_id] = nome_topico
 
-                slug = limpar_nome_para_slug(nome_topico) or "anime"
+            # Varredura complementar via get_forum_topics para garantir
+            try:
+                async for topic in app.get_forum_topics(TARGET_GROUP_ID):
+                    t_id = getattr(topic, "id", None)
+                    t_title = getattr(topic, "title", "").strip()
+                    if t_id and t_title and t_id not in topicos_unicos:
+                        nome_limpo = emoji.replace_emoji(t_title, replace='').strip().lower()
+                        if not any(termo in nome_limpo for termo in IGNORAR_TOPICOS):
+                            topicos_unicos.add(t_id)
+                            topicos_dict[t_id] = t_title
+            except Exception as ex_tp:
+                print(f"⚠️ Aviso no get_forum_topics: {ex_tp}")
+
+            for t_id, t_nome in topicos_dict.items():
+                if t_id > maior_topic_id:
+                    maior_topic_id = t_id
+
+                slug = limpar_nome_para_slug(t_nome) or "anime"
                 link_bot = f"https://t.me/{BOT_TARGET}?start={slug}"
-
                 animes_encontrados.append({
-                    "id": topic_id,
-                    "nome": nome_topico,
+                    "id": t_id,
+                    "nome": t_nome,
                     "link": link_bot
                 })
-
-            # Se get_forum_topics pegou poucos itens, faz varredura complementar no histórico de mensagens
-            if len(animes_encontrados) < 30:
-                print("🔄 Fazendo busca complementar via histórico de mensagens...")
-                async for message in app.get_chat_history(TARGET_GROUP_ID, limit=500):
-                    thread_id = getattr(message, 'message_thread_id', None)
-                    reply_to = getattr(message, 'reply_to_message', None)
-                    
-                    # Tenta capturar o nome do tópico através das mensagens de serviço de criação do tópico
-                    if message.service and hasattr(message, 'forum_topic_created'):
-                        nome_topico = message.forum_topic_created.title
-                        topic_id = message.id
-                        if topic_id and nome_topico and topic_id not in topicos_unicos:
-                            nome_limpo = emoji.replace_emoji(nome_topico, replace='').strip().lower()
-                            if not any(termo in nome_limpo for termo in IGNORAR_TOPICOS):
-                                topicos_unicos.add(topic_id)
-                                if topic_id > maior_topic_id:
-                                    maior_topic_id = topic_id
-                                slug = limpar_nome_para_slug(nome_topico) or "anime"
-                                link_bot = f"https://t.me/{BOT_TARGET}?start={slug}"
-                                animes_encontrados.append({
-                                    "id": topic_id,
-                                    "nome": nome_topico,
-                                    "link": link_bot
-                                })
 
     except Exception as e:
         print(f"❌ Erro de execução no Hydrogram: {e}")
