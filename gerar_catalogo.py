@@ -12,7 +12,6 @@ load_dotenv()
 
 API_ID = os.getenv("API_ID", "28196030")
 API_HASH = os.getenv("API_HASH", "db0ec388f4ff19cbb5ce0ce06e117566")
-BOT_TOKEN = os.getenv("BOT_TOKEN")
 TELEGRAPH_TOKEN = os.getenv("TELEGRAPH_TOKEN")
 SESSION_STRING = os.getenv("SESSION_STRING")
 
@@ -22,6 +21,8 @@ if API_ID:
 if SESSION_STRING:
     SESSION_STRING = SESSION_STRING.strip().strip("'").strip('"')
 
+# ID EXATO E DEFINITIVO DO SEU GRUPO DE FÓRUM
+TARGET_GROUP_ID = -1004388024164
 BOT_TARGET = "Quinellaadm_bot"
 CACHE_FILE = "animes_cache.json"
 PATH_PAGINA = "Yggdrasil-Animes-VIP-09-15"
@@ -32,13 +33,21 @@ def limpar_nome_para_slug(texto):
     slug = re.sub(r'_+', '_', slug).strip('_')
     return slug
 
-def salvar_cache(lista_animes):
-    with open(CACHE_FILE, "w", encoding="utf-8") as f:
-        json.dump(lista_animes, f, ensure_ascii=False, indent=2)
+def obter_token_telegraph():
+    if TELEGRAPH_TOKEN and len(TELEGRAPH_TOKEN) > 10:
+        return TELEGRAPH_TOKEN
+    print("⚠️ Token do Telegraph inválido/ausente. Criando conta temporária...")
+    resp = requests.get("https://api.telegra.ph/createAccount", params={
+        "short_name": "Yggdrasil",
+        "author_name": "Yggdrasil VIP"
+    }).json()
+    if resp.get("ok"):
+        return resp["result"]["access_token"]
+    return TELEGRAPH_TOKEN
 
 async def main():
     if not API_ID or not API_HASH or not SESSION_STRING:
-        print("❌ Credenciais API_ID, API_HASH ou SESSION_STRING ausentes/invalidas!")
+        print("❌ Credenciais API_ID, API_HASH ou SESSION_STRING ausentes/inválidas!")
         return
 
     print("🔄 Conectando à Telegram API via Telethon...")
@@ -50,27 +59,28 @@ async def main():
         print(f"❌ Erro ao autenticar session string: {e}")
         return
 
-    print("🔍 Varrendo todos os grupos da sua conta para encontrar 'Yggdrasil Animes VIP'...")
+    print(f"📌 Acessando diretamente o grupo ID: {TARGET_GROUP_ID}...")
     chat_entity = None
 
-    async for dialog in client.iter_dialogs():
-        nome_chat = dialog.name or ""
-        # Procura por variações do nome do seu grupo
-        if "yggdrasil" in nome_chat.lower():
-            chat_entity = dialog.entity
-            print(f"🎯 Grupo localizado com sucesso: '{dialog.name}' (ID: {dialog.id})")
-            break
+    try:
+        chat_entity = await client.get_entity(TARGET_GROUP_ID)
+        print(f"🎯 Grupo correto carregado: {getattr(chat_entity, 'title', 'Fórum')}")
+    except Exception as e:
+        print(f"⚠️ Erro ao obter entidade por ID direto ({e}). Varrendo lista de chats...")
+        async for dialog in client.iter_dialogs():
+            if dialog.id == TARGET_GROUP_ID:
+                chat_entity = dialog.entity
+                print(f"🎯 Grupo localizado na lista: {dialog.name}")
+                break
 
     if not chat_entity:
-        print("❌ Não foi possível localizar o grupo 'Yggdrasil' nos chats da sua conta.")
+        print("❌ Não foi possível encontrar o grupo com o ID -1004388024164.")
         await client.disconnect()
         return
 
-    print(f"📌 Lendo tópicos do grupo '{getattr(chat_entity, 'title', 'Yggdrasil')}':")
     animes_encontrados = []
     topicos_unicos = set()
 
-    # Método 1: GetForumTopicsRequest
     try:
         offset_date = 0
         offset_id = 0
@@ -101,7 +111,7 @@ async def main():
                 if nome_topico.lower() in ["general", "geral"]:
                     continue
 
-                print(f"  🔹 Tópico encontrado: {nome_topico}")
+                print(f"🔹 Anime/Tópico encontrado: {nome_topico}")
 
                 slug = limpar_nome_para_slug(nome_topico)
                 if not slug:
@@ -119,25 +129,12 @@ async def main():
             offset_date = getattr(ultimo, 'date', 0)
 
     except Exception as e:
-        print(f"⚠️ Aviso ao ler fórum diretamente: {e}")
-
-    # Método 2 (Fallback): Se 0 tópicos foram achados, varre mensagens recentes para pegar tópicos
-    if len(animes_encontrados) == 0:
-        print("🔄 Tentando método alternativo (varredura de mensagens com tópicos)...")
-        try:
-            async for msg in client.iter_messages(chat_entity, limit=300):
-                if getattr(msg, 'reply_to', None) and getattr(msg.reply_to, 'forum_topic', False):
-                    # Tenta extrair dados do tópico através da mensagem
-                    topic_id = msg.reply_to.reply_to_top_id
-                    if topic_id and topic_id not in topicos_unicos:
-                        topicos_unicos.add(topic_id)
-        except Exception as e:
-            print(f"⚠️ Aviso no fallback de mensagens: {e}")
+        print(f"❌ Erro ao ler tópicos do fórum: {e}")
 
     await client.disconnect()
 
     total_animes = len(animes_encontrados)
-    print(f"📊 Total de animes/tópicos encontrados: {total_animes}")
+    print(f"📊 Total de animes encontrados: {total_animes}")
 
     nodes = [
         {"tag": "h3", "children": ["Yggdrasil Animes VIP - Catálogo Oficial"]},
@@ -164,11 +161,12 @@ async def main():
     else:
         nodes.append({"tag": "p", "children": ["Nenhum anime cadastrado nos tópicos no momento."]})
 
-    print(f"📝 Atualizando a página '{PATH_PAGINA}' no Telegraph...")
+    token_ativo = obter_token_telegraph()
+    print(f"📝 Atualizando catálogo no Telegraph...")
     
     url_telegraph = "https://api.telegra.ph/editPage"
     payload = {
-        "access_token": TELEGRAPH_TOKEN,
+        "access_token": token_ativo,
         "path": PATH_PAGINA,
         "title": "Yggdrasil Animes VIP",
         "author_name": "Yggdrasil VIP",
@@ -178,10 +176,16 @@ async def main():
     
     resp = requests.post(url_telegraph, data=payload).json()
     if resp.get("ok"):
-        print(f"🎉 CATÁLOGO ATUALIZADO COM SUCESSO! Link: {resp['result']['url']}")
-        salvar_cache(animes_encontrados)
+        print(f"🎉 CATÁLOGO ATUALIZADO COM SUCESSO!")
+        print(f"👉 Link oficial: {resp['result']['url']}")
     else:
-        print(f"❌ Erro ao atualizar Telegraph: {resp}")
+        print(f"⚠️ Erro ao atualizar página existente: {resp.get('error')}. Tentando criar/atualizar nova página...")
+        url_create = "https://api.telegra.ph/createPage"
+        payload["title"] = "Yggdrasil Animes VIP"
+        resp_create = requests.post(url_create, data=payload).json()
+        if resp_create.get("ok"):
+            print(f"🎉 CATÁLOGO PUBLICADO COM SUCESSO!")
+            print(f"👉 Novo Link: {resp_create['result']['url']}")
 
 if __name__ == "__main__":
     asyncio.run(main())
