@@ -25,7 +25,8 @@ if SESSION_STRING:
 TARGET_GROUP_ID = -1004388024164
 BOT_TARGET = "Quinellaadm_bot"
 CACHE_FILE = "animes_cache.json"
-PATH_PAGINA = "Yggdrasil-Animes-VIP-09-15"
+# URL exata do catálogo que você enviou: https://telegra.ph/Lista-de-animes-09-14
+PATH_PAGINA = "Lista-de-animes-09-14"
 
 def limpar_nome_para_slug(texto):
     texto_sem_emoji = emoji.replace_emoji(texto, replace='')
@@ -90,19 +91,13 @@ async def main():
     except Exception as e:
         print(f"⚠️ Erro M1: {e}")
 
-    # Método 2 (Varredura de Ações de Criação de Tópicos nas Mensagens)
-    print("🔄 Varrendo mensagens para capturar nomes dos tópicos criados...")
+    # Método 2: Varredura de Mensagens
     try:
         async for msg in client.iter_messages(chat_entity, limit=1000):
             if isinstance(getattr(msg, 'action', None), MessageActionTopicCreate):
                 nome_topico = msg.action.title.strip()
                 if nome_topico and nome_topico.lower() not in ["general", "geral"]:
                     dict_animes[nome_topico] = True
-            elif getattr(msg, 'reply_to', None):
-                reply_info = msg.reply_to
-                if getattr(reply_info, 'forum_topic', False):
-                    # Captura mensagens que pertencem a tópicos
-                    pass
     except Exception as e:
         print(f"⚠️ Erro M2: {e}")
 
@@ -143,13 +138,13 @@ async def main():
         nodes.append({"tag": "p", "children": ["Nenhum anime cadastrado nos tópicos no momento."]})
 
     token_ativo = obter_token_telegraph()
-    print(f"📝 Atualizando catálogo no Telegraph...")
+    print(f"📝 Atualizando página '{PATH_PAGINA}' no Telegraph...")
     
     url_telegraph = "https://api.telegra.ph/editPage"
     payload = {
         "access_token": token_ativo,
         "path": PATH_PAGINA,
-        "title": "Yggdrasil Animes VIP",
+        "title": "Lista de animes",
         "author_name": "Yggdrasil VIP",
         "content": str(nodes).replace("'", '"'),
         "return_content": True
@@ -160,7 +155,7 @@ async def main():
         print(f"🎉 CATÁLOGO ATUALIZADO COM SUCESSO! Link: {resp['result']['url']}")
     else:
         url_create = "https://api.telegra.ph/createPage"
-        payload["title"] = "Yggdrasil Animes VIP"
+        payload["title"] = "Lista de animes"
         resp_create = requests.post(url_create, data=payload).json()
         if resp_create.get("ok"):
             print(f"🎉 CATÁLOGO PUBLICADO COM SUCESSO! Link: {resp_create['result']['url']}")
