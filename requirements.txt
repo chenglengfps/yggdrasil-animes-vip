@@ -1,4 +1,4 @@
-pyrogram
+hydrogram
 tgcrypto
 requests
 python-dotenv

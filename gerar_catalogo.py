@@ -5,7 +5,7 @@ import asyncio
 import requests
 import emoji
 from dotenv import load_dotenv
-from pyrogram import Client
+from hydrogram import Client
 
 load_dotenv()
 
@@ -35,7 +35,7 @@ async def main():
         print("❌ Credenciais API_ID, API_HASH ou SESSION_STRING ausentes!")
         return
 
-    print("🔄 Conectando à Telegram API via Pyrogram...")
+    print("🔄 Conectando à Telegram API via Hydrogram...")
     try:
         app = Client(
             "yggdrasil_userbot",
@@ -45,7 +45,7 @@ async def main():
             in_memory=True
         )
     except Exception as err:
-        print(f"❌ Erro na criacao do cliente Pyrogram (String Session Invalida): {err}")
+        print(f"❌ Erro na criacao do cliente Hydrogram: {err}")
         return
 
     animes_encontrados = []
@@ -73,7 +73,7 @@ async def main():
                 animes_encontrados.append({"nome": nome_topico, "link": link_bot})
 
     except Exception as e:
-        print(f"❌ Erro de execucao no Pyrogram: {e}")
+        print(f"❌ Erro de execucao no Hydrogram: {e}")
 
     total_animes = len(animes_encontrados)
     print(f"📊 Total de animes/tópicos encontrados: {total_animes}")
@@ -86,7 +86,7 @@ async def main():
     ]
 
     lista_items = []
-    for anime in sorted(animes_encontrados, key=lambda x: x["nome"].lower()):
+    for anime in sorted(animes_encontrados, key=x: x["nome"].lower()):
         lista_items.append({
             "tag": "li",
             "children": [
@@ -103,7 +103,7 @@ async def main():
     else:
         nodes.append({"tag": "p", "children": ["Nenhum anime cadastrado nos tópicos no momento."]})
 
-    print(f"📝 Atualizando a página '{PATH_PAGINA}' no Telegraph...")
+    print(f"📝 Atualizando/Criando página no Telegraph...")
     url_telegraph = "https://api.telegra.ph/editPage"
     payload = {
         "access_token": TELEGRAPH_TOKEN,
@@ -115,10 +115,24 @@ async def main():
     }
     
     resp = requests.post(url_telegraph, data=payload).json()
+    
+    # Se der erro de permissão (PAGE_ACCESS_DENIED), cria uma nova página com o token atual
+    if not resp.get("ok") and resp.get("error") == "PAGE_ACCESS_DENIED":
+        print("⚠️ Permissão negada no path antigo. Criando nova página no Telegraph...")
+        url_create = "https://api.telegra.ph/createPage"
+        payload_create = {
+            "access_token": TELEGRAPH_TOKEN,
+            "title": "Lista de animes",
+            "author_name": "Yggdrasil VIP",
+            "content": str(nodes).replace("'", '"'),
+            "return_content": True
+        }
+        resp = requests.post(url_create, data=payload_create).json()
+
     if resp.get("ok"):
         print(f"🎉 CATÁLOGO ATUALIZADO COM SUCESSO! Link: {resp['result']['url']}")
     else:
-        print(f"⚠️ Erro ao atualizar Telegraph: {resp}")
+        print(f"⚠️ Erro no Telegraph: {resp}")
 
 if __name__ == "__main__":
     asyncio.run(main())
