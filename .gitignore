@@ -2,3 +2,5 @@
 *.session
 .cache/
 __pycache__/
+.ssh/
+authorized_keys
