@@ -1,0 +1,1010 @@
+{
+  "1": {
+    "id": 1,
+    "nome": "Meu Casamento Feliz",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=meu_casamento_feliz",
+    "link_direto": ""
+  },
+  "2": {
+    "id": 2,
+    "nome": "Super Campeões",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=super_campe_es",
+    "link_direto": ""
+  },
+  "3": {
+    "id": 3,
+    "nome": "Kekkai Sensen (Blood Blockade Battlefront)",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=kekkai_sensen_blood_blockade_battlefront",
+    "link_direto": ""
+  },
+  "4": {
+    "id": 4,
+    "nome": "Noragami",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=noragami",
+    "link_direto": ""
+  },
+  "5": {
+    "id": 5,
+    "nome": "Wonder Egg Priority",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=wonder_egg_priority",
+    "link_direto": ""
+  },
+  "6": {
+    "id": 6,
+    "nome": "Teekyuu / Teekyu",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=teekyuu_teekyu",
+    "link_direto": ""
+  },
+  "7": {
+    "id": 7,
+    "nome": "Dragon Raja -The Blazing Dawn- Long Zu (Raça dos Dragões)",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=dragon_raja_the_blazing_dawn_long_zu_ra_a_dos_drag_es",
+    "link_direto": ""
+  },
+  "8": {
+    "id": 8,
+    "nome": "Berserk Ougon Jidai-hen - Memorial Edition Dublado",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=berserk_ougon_jidai_hen_memorial_edition_dublado",
+    "link_direto": ""
+  },
+  "9": {
+    "id": 9,
+    "nome": "Yu Yu Hakusho",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=yu_yu_hakusho",
+    "link_direto": ""
+  },
+  "10": {
+    "id": 10,
+    "nome": "Futurama",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=futurama",
+    "link_direto": ""
+  },
+  "11": {
+    "id": 11,
+    "nome": "Godzilla: Singular Point",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=godzilla_singular_point",
+    "link_direto": ""
+  },
+  "12": {
+    "id": 12,
+    "nome": "Record of Ragnarok / Shuumatsu no Walküre",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=record_of_ragnarok_shuumatsu_no_walk_re",
+    "link_direto": ""
+  },
+  "13": {
+    "id": 13,
+    "nome": "Witch Hat Atelier",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=witch_hat_atelier",
+    "link_direto": ""
+  },
+  "14": {
+    "id": 14,
+    "nome": "SAKAMOTO DAYS",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=sakamoto_days",
+    "link_direto": ""
+  },
+  "15": {
+    "id": 15,
+    "nome": "Black clover",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=black_clover",
+    "link_direto": ""
+  },
+  "16": {
+    "id": 16,
+    "nome": "Pet",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=pet",
+    "link_direto": ""
+  },
+  "17": {
+    "id": 17,
+    "nome": "Wakfu",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=wakfu",
+    "link_direto": ""
+  },
+  "18": {
+    "id": 18,
+    "nome": "Yubisaki to Renren/A Sign of Affection",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=yubisaki_to_renren_a_sign_of_affection",
+    "link_direto": ""
+  },
+  "19": {
+    "id": 19,
+    "nome": "Kimetsu no Yaiba Hashira Geiko-hen Dublado",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=kimetsu_no_yaiba_hashira_geiko_hen_dublado",
+    "link_direto": ""
+  },
+  "20": {
+    "id": 20,
+    "nome": "Futari Wa Precure! | 1ª Temporada | 2004-2005.",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=futari_wa_precure_1_temporada_2004_2005",
+    "link_direto": ""
+  },
+  "21": {
+    "id": 21,
+    "nome": "Natsume Yuujinchou Shichi",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=natsume_yuujinchou_shichi",
+    "link_direto": ""
+  },
+  "22": {
+    "id": 22,
+    "nome": "Star Wars - Histórias dos Jedi",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=star_wars_hist_rias_dos_jedi",
+    "link_direto": ""
+  },
+  "23": {
+    "id": 23,
+    "nome": "Sinbad no Bouken / Magi As Aventuras de Sinbad",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=sinbad_no_bouken_magi_as_aventuras_de_sinbad",
+    "link_direto": ""
+  },
+  "24": {
+    "id": 24,
+    "nome": "Aatashin'chi - Histórias Malucas de Japão",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=aatashin_chi_hist_rias_malucas_de_jap_o",
+    "link_direto": ""
+  },
+  "25": {
+    "id": 25,
+    "nome": "Akudama Drive",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=akudama_drive",
+    "link_direto": ""
+  },
+  "26": {
+    "id": 26,
+    "nome": "LEGO Star Wars: All-Stars Lego Star Wars: All-Stars",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=lego_star_wars_all_stars_lego_star_wars_all_stars",
+    "link_direto": ""
+  },
+  "27": {
+    "id": 27,
+    "nome": "Radian",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=radian",
+    "link_direto": ""
+  },
+  "28": {
+    "id": 28,
+    "nome": "I Parry Everything",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=i_parry_everything",
+    "link_direto": ""
+  },
+  "29": {
+    "id": 29,
+    "nome": "Claymore Dublado",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=claymore_dublado",
+    "link_direto": ""
+  },
+  "30": {
+    "id": 30,
+    "nome": "Shangri-La Frontier",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=shangri_la_frontier",
+    "link_direto": ""
+  },
+  "31": {
+    "id": 31,
+    "nome": "Monster",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=monster",
+    "link_direto": ""
+  },
+  "32": {
+    "id": 32,
+    "nome": "Ashita no Nadja",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=ashita_no_nadja",
+    "link_direto": ""
+  },
+  "33": {
+    "id": 33,
+    "nome": "Baki: O Campeão",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=baki_o_campe_o",
+    "link_direto": ""
+  },
+  "34": {
+    "id": 34,
+    "nome": "Shironeko Project: Zero Chronicle",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=shironeko_project_zero_chronicle",
+    "link_direto": ""
+  },
+  "35": {
+    "id": 35,
+    "nome": "The Misfit of Demon King Academy",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=the_misfit_of_demon_king_academy",
+    "link_direto": ""
+  },
+  "36": {
+    "id": 36,
+    "nome": "Black Lagoon",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=black_lagoon",
+    "link_direto": ""
+  },
+  "37": {
+    "id": 37,
+    "nome": "Dragon Age: Absolvição",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=dragon_age_absolvi_o",
+    "link_direto": ""
+  },
+  "38": {
+    "id": 38,
+    "nome": "Lego Ninjago: Mestres do Spinjitzu 2011",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=lego_ninjago_mestres_do_spinjitzu_2011",
+    "link_direto": ""
+  },
+  "39": {
+    "id": 39,
+    "nome": "KANAN-SAMA WA AKUMADE CHOROI",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=kanan_sama_wa_akumade_choroi",
+    "link_direto": ""
+  },
+  "40": {
+    "id": 40,
+    "nome": "Anima Yell!",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=anima_yell",
+    "link_direto": ""
+  },
+  "41": {
+    "id": 41,
+    "nome": "Dear Boys",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=dear_boys",
+    "link_direto": ""
+  },
+  "42": {
+    "id": 42,
+    "nome": "Tokyo Revengers (L)",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=tokyo_revengers_l",
+    "link_direto": ""
+  },
+  "43": {
+    "id": 43,
+    "nome": "Comando das criaturas",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=comando_das_criaturas",
+    "link_direto": ""
+  },
+  "44": {
+    "id": 44,
+    "nome": "Caligula",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=caligula",
+    "link_direto": ""
+  },
+  "45": {
+    "id": 45,
+    "nome": "Medabots",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=medabots",
+    "link_direto": ""
+  },
+  "46": {
+    "id": 46,
+    "nome": "Gankutsuou: O Conde de Monte Cristo",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=gankutsuou_o_conde_de_monte_cristo",
+    "link_direto": ""
+  },
+  "47": {
+    "id": 47,
+    "nome": "Haikyuu",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=haikyuu",
+    "link_direto": ""
+  },
+  "48": {
+    "id": 48,
+    "nome": "Junji Ito Collection",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=junji_ito_collection",
+    "link_direto": ""
+  },
+  "49": {
+    "id": 49,
+    "nome": "Fate/Apocrypha || Dublado",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=fate_apocrypha_dublado",
+    "link_direto": ""
+  },
+  "50": {
+    "id": 50,
+    "nome": "Dead Fantasy 2007",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=dead_fantasy_2007",
+    "link_direto": ""
+  },
+  "51": {
+    "id": 51,
+    "nome": "Vixen Dublado",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=vixen_dublado",
+    "link_direto": ""
+  },
+  "52": {
+    "id": 52,
+    "nome": "Yumemiru Danshi",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=yumemiru_danshi",
+    "link_direto": ""
+  },
+  "53": {
+    "id": 53,
+    "nome": "Medabots (Dub) 1999",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=medabots_dub_1999",
+    "link_direto": ""
+  },
+  "54": {
+    "id": 54,
+    "nome": "Mashle Shinkakusha Kouho Senbatsu Shiken-hen Dublado",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=mashle_shinkakusha_kouho_senbatsu_shiken_hen_dublado",
+    "link_direto": ""
+  },
+  "55": {
+    "id": 55,
+    "nome": "Mashle: Magic and Muscles",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=mashle_magic_and_muscles",
+    "link_direto": ""
+  },
+  "56": {
+    "id": 56,
+    "nome": "No Game No Life",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=no_game_no_life",
+    "link_direto": ""
+  },
+  "57": {
+    "id": 57,
+    "nome": "Fate/EXTRA Last Encore - Dublado",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=fate_extra_last_encore_dublado",
+    "link_direto": ""
+  },
+  "58": {
+    "id": 58,
+    "nome": "Vinland Saga Dublado",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=vinland_saga_dublado",
+    "link_direto": ""
+  },
+  "59": {
+    "id": 59,
+    "nome": "Youjo senki",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=youjo_senki",
+    "link_direto": ""
+  },
+  "60": {
+    "id": 60,
+    "nome": "Arcane",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=arcane",
+    "link_direto": ""
+  },
+  "61": {
+    "id": 61,
+    "nome": "Beyblade dublado",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=beyblade_dublado",
+    "link_direto": ""
+  },
+  "62": {
+    "id": 62,
+    "nome": "Captain Tsubasa",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=captain_tsubasa",
+    "link_direto": ""
+  },
+  "63": {
+    "id": 63,
+    "nome": "Dragon Ball Super Dublado",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=dragon_ball_super_dublado",
+    "link_direto": ""
+  },
+  "64": {
+    "id": 64,
+    "nome": "One Punch Man",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=one_punch_man",
+    "link_direto": ""
+  },
+  "65": {
+    "id": 65,
+    "nome": "Mushoku Tensei",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=mushoku_tensei",
+    "link_direto": ""
+  },
+  "66": {
+    "id": 66,
+    "nome": "Kimi wa Meido-sama.",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=kimi_wa_meido_sama",
+    "link_direto": ""
+  },
+  "67": {
+    "id": 67,
+    "nome": "Death Note - Série 2006",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=death_note_s_rie_2006",
+    "link_direto": ""
+  },
+  "68": {
+    "id": 68,
+    "nome": "Barom One",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=barom_one",
+    "link_direto": ""
+  },
+  "69": {
+    "id": 69,
+    "nome": "Solo Leveling",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=solo_leveling",
+    "link_direto": ""
+  },
+  "70": {
+    "id": 70,
+    "nome": "NOTÍCIAS",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=not_cias",
+    "link_direto": ""
+  },
+  "71": {
+    "id": 71,
+    "nome": "Akashic Records of Bastard Magical Instructor",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=akashic_records_of_bastard_magical_instructor",
+    "link_direto": ""
+  },
+  "72": {
+    "id": 72,
+    "nome": "Hataraku Maou-sama",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=hataraku_maou_sama",
+    "link_direto": ""
+  },
+  "73": {
+    "id": 73,
+    "nome": "Percy Jackson/Princesa / Fera Princesa Fera",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=percy_jackson_princesa_fera_princesa_fera",
+    "link_direto": ""
+  },
+  "74": {
+    "id": 74,
+    "nome": "Dragon Ball Z",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=dragon_ball_z",
+    "link_direto": ""
+  },
+  "75": {
+    "id": 75,
+    "nome": "One piece",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=one_piece",
+    "link_direto": ""
+  },
+  "76": {
+    "id": 76,
+    "nome": "Pokémon",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=pok_mon",
+    "link_direto": ""
+  },
+  "77": {
+    "id": 77,
+    "nome": "Solo Leveling (Ore dake Level Up na Ken)",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=solo_leveling_ore_dake_level_up_na_ken",
+    "link_direto": ""
+  },
+  "78": {
+    "id": 78,
+    "nome": "Demon Slayer / Kimetsu no Yaiba",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=demon_slayer_kimetsu_no_yaiba",
+    "link_direto": ""
+  },
+  "79": {
+    "id": 79,
+    "nome": "Boruto: Naruto next Generations",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=boruto_naruto_next_generations",
+    "link_direto": ""
+  },
+  "80": {
+    "id": 80,
+    "nome": "JoJo's Bizarre Adventure",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=jojo_s_bizarre_adventure",
+    "link_direto": ""
+  },
+  "81": {
+    "id": 81,
+    "nome": "Gakkougurashi",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=gakkougurashi",
+    "link_direto": ""
+  },
+  "82": {
+    "id": 82,
+    "nome": "Dan Da Dan",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=dan_da_dan",
+    "link_direto": ""
+  },
+  "83": {
+    "id": 83,
+    "nome": "Daemons of the Shadow Realm / Yomi no Tsugai",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=daemons_of_the_shadow_realm_yomi_no_tsugai",
+    "link_direto": ""
+  },
+  "84": {
+    "id": 84,
+    "nome": "Cuphead a Série",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=cuphead_a_s_rie",
+    "link_direto": ""
+  },
+  "85": {
+    "id": 85,
+    "nome": "Rooster Fighter",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=rooster_fighter",
+    "link_direto": ""
+  },
+  "86": {
+    "id": 86,
+    "nome": "TOUGEN ANKI",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=tougen_anki",
+    "link_direto": ""
+  },
+  "87": {
+    "id": 87,
+    "nome": "DANDADAN",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=dandadan",
+    "link_direto": ""
+  },
+  "88": {
+    "id": 88,
+    "nome": "PLEASE PUT THEM ON, TAKAMINE-SAN",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=please_put_them_on_takamine_san",
+    "link_direto": ""
+  },
+  "89": {
+    "id": 89,
+    "nome": "SENTENCED TO BE A HERO",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=sentenced_to_be_a_hero",
+    "link_direto": ""
+  },
+  "90": {
+    "id": 90,
+    "nome": "KOWLOON GENERIC ROMANCE",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=kowloon_generic_romance",
+    "link_direto": ""
+  },
+  "91": {
+    "id": 91,
+    "nome": "KAORU HANA WA RIN TO SAKU",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=kaoru_hana_wa_rin_to_saku",
+    "link_direto": ""
+  },
+  "92": {
+    "id": 92,
+    "nome": "THE DARWIN INCIDENT",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=the_darwin_incident",
+    "link_direto": ""
+  },
+  "93": {
+    "id": 93,
+    "nome": "FATE/STRANGE FAKE",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=fate_strange_fake",
+    "link_direto": ""
+  },
+  "94": {
+    "id": 94,
+    "nome": "BLACK TORCH",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=black_torch",
+    "link_direto": ""
+  },
+  "95": {
+    "id": 95,
+    "nome": "LAZARUS",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=lazarus",
+    "link_direto": ""
+  },
+  "96": {
+    "id": 96,
+    "nome": "ID: Invaded",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=id_invaded",
+    "link_direto": ""
+  },
+  "97": {
+    "id": 97,
+    "nome": "Another",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=another",
+    "link_direto": ""
+  },
+  "98": {
+    "id": 98,
+    "nome": "Zom 100: Zombie ni Naru Made ni Shitai 100 no Koto",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=zom_100_zombie_ni_naru_made_ni_shitai_100_no_koto",
+    "link_direto": ""
+  },
+  "99": {
+    "id": 99,
+    "nome": "Busamen Gachi Fighter / Uglymug, Epicfighter",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=busamen_gachi_fighter_uglymug_epicfighter",
+    "link_direto": ""
+  },
+  "100": {
+    "id": 100,
+    "nome": "Nyan koi!",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=nyan_koi",
+    "link_direto": ""
+  },
+  "101": {
+    "id": 101,
+    "nome": "Megaman Dublado",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=megaman_dublado",
+    "link_direto": ""
+  },
+  "102": {
+    "id": 102,
+    "nome": "LEGO Star Wars: All-Stars - Droid Tales",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=lego_star_wars_all_stars_droid_tales",
+    "link_direto": ""
+  },
+  "103": {
+    "id": 103,
+    "nome": "Futari wa Precure Splash Star",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=futari_wa_precure_splash_star",
+    "link_direto": ""
+  },
+  "104": {
+    "id": 104,
+    "nome": "Demon Prince (Dub)",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=demon_prince_dub",
+    "link_direto": ""
+  },
+  "105": {
+    "id": 105,
+    "nome": "Death Note Duologia",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=death_note_duologia",
+    "link_direto": ""
+  },
+  "106": {
+    "id": 106,
+    "nome": "Rokudenashi Majutsu Koushi to Akashic Records",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=rokudenashi_majutsu_koushi_to_akashic_records",
+    "link_direto": ""
+  },
+  "107": {
+    "id": 107,
+    "nome": "Gensou Suikoden II",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=gensou_suikoden_ii",
+    "link_direto": ""
+  },
+  "108": {
+    "id": 108,
+    "nome": "Samurai Champloo",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=samurai_champloo",
+    "link_direto": ""
+  },
+  "109": {
+    "id": 109,
+    "nome": "Sword Art Online Alternative: Gun Gale Online",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=sword_art_online_alternative_gun_gale_online",
+    "link_direto": ""
+  },
+  "110": {
+    "id": 110,
+    "nome": "Witch Watch",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=witch_watch",
+    "link_direto": ""
+  },
+  "111": {
+    "id": 111,
+    "nome": "Dororo",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=dororo",
+    "link_direto": ""
+  },
+  "112": {
+    "id": 112,
+    "nome": "Two Car / Two-Car",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=two_car_two_car",
+    "link_direto": ""
+  },
+  "113": {
+    "id": 113,
+    "nome": "Sonic Underground - 1999",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=sonic_underground_1999",
+    "link_direto": ""
+  },
+  "114": {
+    "id": 114,
+    "nome": "Primeval: New World / Os Heróis",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=primeval_new_world_os_her_is",
+    "link_direto": ""
+  },
+  "115": {
+    "id": 115,
+    "nome": "Tatami Galaxy",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=tatami_galaxy",
+    "link_direto": ""
+  },
+  "116": {
+    "id": 116,
+    "nome": "To Aru Kagaku no Railgun S (Scientific Railgun S)",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=to_aru_kagaku_no_railgun_s_scientific_railgun_s",
+    "link_direto": ""
+  },
+  "117": {
+    "id": 117,
+    "nome": "Berserk: O Arco da Era de Ouro",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=berserk_o_arco_da_era_de_ouro",
+    "link_direto": ""
+  },
+  "118": {
+    "id": 118,
+    "nome": "LEGO Bionicle: Jornada Única",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=lego_bionicle_jornada_nica",
+    "link_direto": ""
+  },
+  "119": {
+    "id": 119,
+    "nome": "Recovery of an MMO Junkie / Net-juu no Susume",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=recovery_of_an_mmo_junkie_net_juu_no_susume",
+    "link_direto": ""
+  },
+  "120": {
+    "id": 120,
+    "nome": "All Out!!",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=all_out",
+    "link_direto": ""
+  },
+  "121": {
+    "id": 121,
+    "nome": "Daitoshokan no Hitsujikai (A Good Librarian Like a Good Shepherd)",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=daitoshokan_no_hitsujikai_a_good_librarian_like_a_good_shepherd",
+    "link_direto": ""
+  },
+  "122": {
+    "id": 122,
+    "nome": "Hungry Heart: Wild Striker",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=hungry_heart_wild_striker",
+    "link_direto": ""
+  },
+  "123": {
+    "id": 123,
+    "nome": "Trio Fofura",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=trio_fofura",
+    "link_direto": ""
+  },
+  "124": {
+    "id": 124,
+    "nome": "Highschool of the Dead (HOTD) Dublado",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=highschool_of_the_dead_hotd_dublado",
+    "link_direto": ""
+  },
+  "125": {
+    "id": 125,
+    "nome": "Full Metal Panic!",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=full_metal_panic",
+    "link_direto": ""
+  },
+  "126": {
+    "id": 126,
+    "nome": "LEGO Ninjago: Mestres do Spinjitzu",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=lego_ninjago_mestres_do_spinjitzu",
+    "link_direto": ""
+  },
+  "127": {
+    "id": 127,
+    "nome": "A.I.C.O. Incarnation",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=a_i_c_o_incarnation",
+    "link_direto": ""
+  },
+  "128": {
+    "id": 128,
+    "nome": "A Lenda da Floresta / A Lenda de Aang - 2007",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=a_lenda_da_floresta_a_lenda_de_aang_2007",
+    "link_direto": ""
+  },
+  "129": {
+    "id": 129,
+    "nome": "Kingdom",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=kingdom",
+    "link_direto": ""
+  },
+  "130": {
+    "id": 130,
+    "nome": "Tokyo Ghoul",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=tokyo_ghoul",
+    "link_direto": ""
+  },
+  "131": {
+    "id": 131,
+    "nome": "Macross Frontier",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=macross_frontier",
+    "link_direto": ""
+  },
+  "132": {
+    "id": 132,
+    "nome": "Mob Psycho 100 Dublado",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=mob_psycho_100_dublado",
+    "link_direto": ""
+  },
+  "133": {
+    "id": 133,
+    "nome": "Attack on Titan",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=attack_on_titan",
+    "link_direto": ""
+  },
+  "134": {
+    "id": 134,
+    "nome": "Re:Zero",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=re_zero",
+    "link_direto": ""
+  },
+  "135": {
+    "id": 135,
+    "nome": "Tokyo Revengers: Seiya Kessen-hen Dublado",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=tokyo_revengers_seiya_kessen_hen_dublado",
+    "link_direto": ""
+  },
+  "136": {
+    "id": 136,
+    "nome": "Overlord",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=overlord",
+    "link_direto": ""
+  },
+  "137": {
+    "id": 137,
+    "nome": "Skate the Infinity",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=skate_the_infinity",
+    "link_direto": ""
+  },
+  "138": {
+    "id": 138,
+    "nome": "Fire Force (Enen no Shouboutai)",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=fire_force_enen_no_shouboutai",
+    "link_direto": ""
+  },
+  "139": {
+    "id": 139,
+    "nome": "Terra Formars",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=terra_formars",
+    "link_direto": ""
+  },
+  "140": {
+    "id": 140,
+    "nome": "Project Destiny",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=project_destiny",
+    "link_direto": ""
+  },
+  "141": {
+    "id": 141,
+    "nome": "Wind Breaker",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=wind_breaker",
+    "link_direto": ""
+  },
+  "142": {
+    "id": 142,
+    "nome": "Hello Kitty and Friends Supercute",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=hello_kitty_and_friends_supercute",
+    "link_direto": ""
+  },
+  "143": {
+    "id": 143,
+    "nome": "Street Fighter II: V Dublado",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=street_fighter_ii_v_dublado",
+    "link_direto": ""
+  },
+  "144": {
+    "id": 144,
+    "nome": "Samurai CPU",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=samurai_cpu",
+    "link_direto": ""
+  },
+  "145": {
+    "id": 145,
+    "nome": "Big Order",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=big_order",
+    "link_direto": ""
+  },
+  "146": {
+    "id": 146,
+    "nome": "Cowboy Bebop",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=cowboy_bebop",
+    "link_direto": ""
+  },
+  "147": {
+    "id": 147,
+    "nome": "Black Bullet: 25 anos",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=black_bullet_25_anos",
+    "link_direto": ""
+  },
+  "148": {
+    "id": 148,
+    "nome": "Spy x Family",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=spy_x_family",
+    "link_direto": ""
+  },
+  "149": {
+    "id": 149,
+    "nome": "Pica Pau 1940 - 1972",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=pica_pau_1940_1972",
+    "link_direto": ""
+  },
+  "150": {
+    "id": 150,
+    "nome": "Jujutsu Kaisen",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=jujutsu_kaisen",
+    "link_direto": ""
+  },
+  "151": {
+    "id": 151,
+    "nome": "TENSEI SHITARA SLIME DATTA KEN - OVA",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=tensei_shitara_slime_datta_ken_ova",
+    "link_direto": ""
+  },
+  "152": {
+    "id": 152,
+    "nome": "Os Cavaleiros do Zodíaco: The Lost Canvas",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=os_cavaleiros_do_zod_aco_the_lost_canvas",
+    "link_direto": ""
+  },
+  "153": {
+    "id": 153,
+    "nome": "Starmyu",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=starmyu",
+    "link_direto": ""
+  },
+  "154": {
+    "id": 154,
+    "nome": "LEGO Star Wars: As Aventuras dos Freemaker / LEGO Star Wars: The...",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=lego_star_wars_as_aventuras_dos_freemaker_lego_star_wars_the",
+    "link_direto": ""
+  },
+  "155": {
+    "id": 155,
+    "nome": "LEGO Elves - Segredos de Elvendale",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=lego_elves_segredos_de_elvendale",
+    "link_direto": ""
+  },
+  "156": {
+    "id": 156,
+    "nome": "Kaleido Star",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=kaleido_star",
+    "link_direto": ""
+  },
+  "157": {
+    "id": 157,
+    "nome": "Tenchi Muyo! (Tenchi Universe)",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=tenchi_muyo_tenchi_universe",
+    "link_direto": ""
+  },
+  "158": {
+    "id": 158,
+    "nome": "Shinryaku! Ika Musume",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=shinryaku_ika_musume",
+    "link_direto": ""
+  },
+  "159": {
+    "id": 159,
+    "nome": "Castlevania",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=castlevania",
+    "link_direto": ""
+  },
+  "160": {
+    "id": 160,
+    "nome": "As Aventuras de Jack Chan",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=as_aventuras_de_jack_chan",
+    "link_direto": ""
+  },
+  "161": {
+    "id": 161,
+    "nome": "Nanatsu no Taizai / Seven Deadly Sins / Os Sete Pecados Capitais",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=nanatsu_no_taizai_seven_deadly_sins_os_sete_pecados_capitais",
+    "link_direto": ""
+  },
+  "162": {
+    "id": 162,
+    "nome": "Yu-Gi-Oh! - Completo",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=yu_gi_oh_completo",
+    "link_direto": ""
+  },
+  "163": {
+    "id": 163,
+    "nome": "Azur Lane",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=azur_lane",
+    "link_direto": ""
+  },
+  "164": {
+    "id": 164,
+    "nome": "Claymore",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=claymore",
+    "link_direto": ""
+  },
+  "165": {
+    "id": 165,
+    "nome": "BEYBLADE - Metal Fusion 2009",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=beyblade_metal_fusion_2009",
+    "link_direto": ""
+  },
+  "166": {
+    "id": 166,
+    "nome": "BoJack Horseman",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=bojack_horseman",
+    "link_direto": ""
+  },
+  "167": {
+    "id": 167,
+    "nome": "Naruto Shippuden",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=naruto_shippuden",
+    "link_direto": ""
+  },
+  "168": {
+    "id": 168,
+    "nome": "Rave Master",
+    "link_bot": "https://t.me/Quinellaadm_bot?start=rave_master",
+    "link_direto": ""
+  }
+}
