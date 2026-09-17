@@ -2,7 +2,7 @@ name: Automação do Catálogo de Animes
 
 on:
   schedule:
-    - cron: '0 * * * *'
+    - cron: '0 * * * *'  # Executa a cada 1 hora automaticamente
   workflow_dispatch:
 
 jobs:
@@ -10,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Baixar Código
+    - name: Baixar o repositório
       uses: actions/checkout@v3
 
-    - name: Configurar Python
+    - name: Configurar o Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.10'
@@ -23,12 +23,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install pyrogram tgcrypto telegraph emoji python-dotenv
 
-    - name: Executar Atualização
+    - name: Executar Atualização do Catálogo
       env:
         API_ID: ${{ secrets.API_ID }}
         API_HASH: ${{ secrets.API_HASH }}
-        PYROGRAM_SESSION: ${{ secrets.PYROGRAM_SESSION || secrets.SESSION_STRING }}
-        SESSION_STRING: ${{ secrets.SESSION_STRING || secrets.PYROGRAM_SESSION }}
+        PYROGRAM_SESSION: ${{ secrets.SESSION_STRING || secrets.PYROGRAM_SESSION }}
         TELEGRAPH_TOKEN: ${{ secrets.TELEGRAPH_TOKEN }}
         CHAT_ID: ${{ secrets.CHAT_ID }}
       run: python3 atualizar_catalogo.py
