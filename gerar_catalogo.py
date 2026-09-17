@@ -2,28 +2,28 @@ import os
 import re
 import json
 import asyncio
-import requests
 import emoji
 from dotenv import load_dotenv
-from hydrogram import Client
+from pyrogram import Client
+from pyrogram.raw import functions
+from telegraph import Telegraph
 
 load_dotenv()
 
-API_ID = os.getenv("API_ID")
-API_HASH = os.getenv("API_HASH")
-TELEGRAPH_TOKEN = os.getenv("TELEGRAPH_TOKEN")
-SESSION_STRING = os.getenv("SESSION_STRING")
+API_ID = int(os.getenv("API_ID", 0))
+API_HASH = os.getenv("API_HASH", "")
+PYROGRAM_SESSION = os.getenv("PYROGRAM_SESSION", "")
+TELEGRAPH_TOKEN = os.getenv("TELEGRAPH_TOKEN", "")
+CHAT_ID = int(os.getenv("CHAT_ID", 0))
 
-if API_ID:
-    API_ID = int(API_ID)
-
-if SESSION_STRING:
-    SESSION_STRING = SESSION_STRING.strip().strip("'").strip('"').replace("\n", "").replace("\r", "")
-
-TARGET_GROUP_ID = -1004388024164
 BOT_TARGET = "Quinellaadm_bot"
 PATH_PAGINA = "Lista-de-animes-09-16-4"
 JSON_FILE = "catalogo_memoria.json"
+
+IGNORAR_TOPICOS = [
+    "general", "geral", "bate-papo", "sugestões", "sugestoes", 
+    "bate papo", "chat", "regras", "avisos"
+]
 
 def limpar_nome_para_slug(texto):
     texto_sem_emoji = emoji.replace_emoji(texto, replace='')
@@ -31,173 +31,116 @@ def limpar_nome_para_slug(texto):
     slug = re.sub(r'_+', '_', slug).strip('_')
     return slug
 
-def carregar_memoria():
-    if os.path.exists(JSON_FILE):
-        try:
-            with open(JSON_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except Exception as e:
-            print(f"⚠️ Erro ao ler {JSON_FILE}: {e}")
-    return {}
-
-def salvar_memoria(dados):
-    try:
-        with open(JSON_FILE, "w", encoding="utf-8") as f:
-            json.dump(dados, f, ensure_ascii=False, indent=2)
-    except Exception as e:
-        print(f"❌ Erro ao salvar {JSON_FILE}: {e}")
-
 async def main():
-    if not API_ID or not API_HASH or not SESSION_STRING:
-        print("❌ Credenciais API_ID, API_HASH ou SESSION_STRING ausentes!")
+    if not API_ID or not API_HASH or not PYROGRAM_SESSION:
+        print("❌ Credenciais ausentes no arquivo .env!")
         return
 
-    print("🔄 Conectando à Telegram API via Hydrogram...")
-    try:
-        app = Client(
-            "yggdrasil_userbot",
-            api_id=API_ID,
-            api_hash=API_HASH,
-            session_string=SESSION_STRING,
-            in_memory=True
-        )
-    except Exception as err:
-        print(f"❌ Erro na criação do cliente Hydrogram: {err}")
-        return
+    if os.path.exists(JSON_FILE):
+        with open(JSON_FILE, "r", encoding="utf-8") as f:
+            memoria = json.load(f)
+    else:
+        memoria = {}
 
-    IGNORAR_TOPICOS = [
-        "general", "geral", "bate-papo", "sugestões", "sugestoes", 
-        "bate papo", "chat", "regras", "avisos"
-    ]
+    novos_animes = []
 
-    memoria_animes = carregar_memoria()
-    e_primeira_execucao = (len(memoria_animes) == 0)
-    novos_animes_detectados = []
+    app = Client("ygg_userbot", api_id=API_ID, api_hash=API_HASH, session_string=PYROGRAM_SESSION, in_memory=True)
 
     try:
         async with app:
-            print(f"📌 Buscando novos tópicos no grupo: {TARGET_GROUP_ID}...")
+            peer = await app.resolve_peer(CHAT_ID)
             
-            async for topic in app.get_forum_topics(TARGET_GROUP_ID):
+            offset_date = 0
+            offset_id = 0
+            offset_topic_id = 0
+            limit = 100
+            todos_topicos = []
+
+            # Paginação via API RAW
+            while True:
+                res = await app.invoke(
+                    functions.channels.GetForumTopics(
+                        channel=peer,
+                        q="",
+                        offset_date=offset_date,
+                        offset_id=offset_id,
+                        offset_topic=offset_topic_id,
+                        limit=limit
+                    )
+                )
+
+                if not res.topics:
+                    break
+
+                todos_topicos.extend(res.topics)
+
+                if len(res.topics) < limit:
+                    break
+
+                ultimo = res.topics[-1]
+                offset_topic_id = ultimo.id
+                offset_id = getattr(ultimo, "top_message", 0)
+                offset_date = getattr(ultimo, "date", 0)
+
+            # Ordena do mais antigo para o mais novo
+            todos_topicos.sort(key=lambda x: getattr(x, 'id', 0))
+
+            vistos_slugs = {limpar_nome_para_slug(v["nome"]) for v in memoria.values()}
+
+            for topic in todos_topicos:
                 nome_topico = getattr(topic, 'title', '').strip()
                 topic_id = getattr(topic, 'id', None)
 
                 if not nome_topico or not topic_id:
                     continue
 
-                str_id = str(topic_id)
                 nome_limpo = emoji.replace_emoji(nome_topico, replace='').strip().lower()
-                
                 if any(termo in nome_limpo for termo in IGNORAR_TOPICOS):
                     continue
 
-                slug = limpar_nome_para_slug(nome_topico) or "anime"
-                link_bot = f"https://t.me/{BOT_TARGET}?start={slug}"
-                
-                # Link direto para o tópico dentro do grupo VIP
-                grupo_clean_id = str(TARGET_GROUP_ID).replace("-100", "")
-                link_topico_direto = f"https://t.me/c/{grupo_clean_id}/{topic_id}"
+                slug = limpar_nome_para_slug(nome_topico)
+                str_id = str(topic_id)
 
-                item_anime = {
-                    "id": topic_id,
-                    "nome": nome_topico,
-                    "link_bot": link_bot,
-                    "link_direto": link_topico_direto
-                }
+                if slug not in vistos_slugs and str_id not in memoria:
+                    item = {
+                        "id": topic_id,
+                        "nome": nome_topico,
+                        "link_bot": f"https://t.me/{BOT_TARGET}?start={slug}",
+                        "link_direto": ""
+                    }
+                    memoria[str_id] = item
+                    vistos_slugs.add(slug)
+                    novos_animes.append(item)
 
-                # Se o tópico ainda não consta na memória local
-                if str_id not in memoria_animes:
-                    memoria_animes[str_id] = item_anime
-                    if not e_primeira_execucao:
-                        novos_animes_detectados.append(item_anime)
+            if novos_animes:
+                print(f"✨ {len(novos_animes)} novo(s) anime(s) encontrado(s)!")
 
-            # Notificações no grupo Telegram
-            if e_primeira_execucao:
-                msg_teste = "✅ **O bot foi configurado com sucesso!**\n\n A partir de agora, o catálogo será atualizado automaticamente e novos animes serão notificados aqui no grupo."
-                try:
-                    await app.send_message(TARGET_GROUP_ID, msg_teste)
-                    print("📢 Mensagem de teste enviada com sucesso no grupo VIP!")
-                except Exception as ex_msg:
-                    print(f"⚠️ Não foi possível enviar a mensagem no grupo: {ex_msg}")
-            else:
-                for novo in novos_animes_detectados:
-                    msg_novo = (
-                        f"🎉 **Novo anime disponível, acompanhe já!**\n\n"
-                        f"📺 **{novo['nome']}**\n"
-                        f"🔗 [Clique aqui para acessar o tópico]({novo['link_direto']})"
+                with open(JSON_FILE, "w", encoding="utf-8") as f:
+                    json.dump(memoria, f, ensure_ascii=False, indent=2)
+
+                html = f"<h3>Yggdrasil Animes VIP - Catálogo Oficial</h3><p>📊 Total de animes disponíveis: {len(memoria)}</p><p>Clique no título para acessar via bot:</p><hr><ul>"
+                for a in sorted(memoria.values(), key=lambda x: x["nome"].lower()):
+                    html += f'<li><a href="{a["link_bot"]}">{a["nome"]}</a></li>'
+                html += "</ul>"
+
+                t = Telegraph(access_token=TELEGRAPH_TOKEN)
+                t.edit_page(path=PATH_PAGINA, title="Lista de Animes", html_content=html, author_name="Yggdrasil VIP")
+                print("🎉 Telegraph atualizado!")
+
+                for a in novos_animes:
+                    msg = (
+                        f"🆕 **NOVO ANIME ADICIONADO AO CATÁLOGO!**\n\n"
+                        f"📌 **Nome:** {a['nome']}\n"
+                        f"🤖 **Acesse via Bot:** {a['link_bot']}\n\n"
+                        f"📖 **Catálogo Completo:** https://telegra.ph/{PATH_PAGINA}"
                     )
-                    try:
-                        await app.send_message(TARGET_GROUP_ID, msg_novo, disable_web_page_preview=True)
-                        print(f"📢 Notificação enviada no grupo para: {novo['nome']}")
-                    except Exception as ex_novo:
-                        print(f"⚠️ Erro ao enviar notificação de novo anime: {ex_novo}")
+                    await app.send_message(CHAT_ID, msg)
+                    print(f"📢 Aviso enviado no grupo: {a['nome']}")
+            else:
+                print("✅ Nenhum novo anime. Tudo atualizado!")
 
     except Exception as e:
-        print(f"❌ Erro de execução no Hydrogram: {e}")
-
-    salvar_memoria(memoria_animes)
-
-    animes_encontrados = list(memoria_animes.values())
-    total_animes = len(animes_encontrados)
-    print(f"📊 Total acumulado de animes na memória: {total_animes}")
-
-    if total_animes == 0:
-        print("⚠️ Nenhum anime na memória. Abortando atualização do Telegraph.")
-        return
-
-    # Descobre o ID mais alto para marcar com "🆕 NOVO"
-    maior_topic_id = max([a["id"] for a in animes_encontrados]) if animes_encontrados else -1
-
-    nodes = [
-        {"tag": "h3", "children": ["Yggdrasil Animes VIP - Catálogo Oficial"]},
-        {"tag": "p", "children": [f"📊 Total de animes disponíveis: {total_animes}"]},
-        {"tag": "p", "children": ["Clique no título do anime para acessar via bot:"]},
-        {"tag": "hr", "children": []}
-    ]
-
-    lista_items = []
-    for anime in sorted(animes_encontrados, key=lambda x: x["nome"].lower()):
-        e_novo = (anime["id"] == maior_topic_id)
-
-        children_elements = [
-            {
-                "tag": "a",
-                "attrs": {"href": anime["link_bot"]},
-                "children": [anime["nome"]]
-            }
-        ]
-
-        if e_novo:
-            children_elements.append(" ")
-            children_elements.append({
-                "tag": "b",
-                "children": ["🆕 NOVO"]
-            })
-
-        lista_items.append({
-            "tag": "li",
-            "children": children_elements
-        })
-
-    nodes.append({"tag": "ul", "children": lista_items})
-
-    print(f"📝 Atualizando página fixa no Telegraph ({PATH_PAGINA})...")
-    url_telegraph = "https://api.telegra.ph/editPage"
-    payload = {
-        "access_token": TELEGRAPH_TOKEN,
-        "path": PATH_PAGINA,
-        "title": "Lista de animes",
-        "author_name": "Yggdrasil VIP",
-        "content": str(nodes).replace("'", '"'),
-        "return_content": True
-    }
-
-    resp = requests.post(url_telegraph, data=payload).json()
-
-    if resp.get("ok"):
-        print(f"🎉 CATÁLOGO ATUALIZADO COM SUCESSO! Link: {resp['result']['url']}")
-    else:
-        print(f"⚠️ Erro no Telegraph: {resp}")
+        print(f"❌ Erro durante a execução: {e}")
 
 if __name__ == "__main__":
     asyncio.run(main())

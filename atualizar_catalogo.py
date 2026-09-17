@@ -1,6 +1,6 @@
 import os
-import re
 import json
+import re
 import asyncio
 import emoji
 from dotenv import load_dotenv
@@ -12,7 +12,7 @@ load_dotenv()
 
 API_ID = int(os.getenv("API_ID", 0))
 API_HASH = os.getenv("API_HASH", "")
-PYROGRAM_SESSION = os.getenv("PYROGRAM_SESSION", "")
+PYROGRAM_SESSION = os.getenv("PYROGRAM_SESSION") or os.getenv("SESSION_STRING", "")
 TELEGRAPH_TOKEN = os.getenv("TELEGRAPH_TOKEN", "")
 CHAT_ID = int(os.getenv("CHAT_ID", 0))
 
@@ -32,8 +32,8 @@ def limpar_nome_para_slug(texto):
     return slug
 
 async def main():
-    if not API_ID or not API_HASH or not PYROGRAM_SESSION:
-        print("❌ Credenciais ausentes no arquivo .env!")
+    if not API_ID or not API_HASH or not PYROGRAM_SESSION or not CHAT_ID:
+        print(f"❌ Credenciais ausentes! API_ID={API_ID}, HAS_HASH={bool(API_HASH)}, HAS_SESSION={bool(PYROGRAM_SESSION)}, CHAT_ID={CHAT_ID}")
         return
 
     if os.path.exists(JSON_FILE):
@@ -48,7 +48,8 @@ async def main():
 
     try:
         async with app:
-            peer = await app.resolve_peer(CHAT_ID)
+            chat_obj = await app.get_chat(CHAT_ID)
+            peer = await app.resolve_peer(chat_obj.id)
             
             offset_date = 0
             offset_id = 0
@@ -56,7 +57,6 @@ async def main():
             limit = 100
             todos_topicos = []
 
-            # Paginação via API RAW
             while True:
                 res = await app.invoke(
                     functions.channels.GetForumTopics(
@@ -82,7 +82,6 @@ async def main():
                 offset_id = getattr(ultimo, "top_message", 0)
                 offset_date = getattr(ultimo, "date", 0)
 
-            # Ordena do mais antigo para o mais novo
             todos_topicos.sort(key=lambda x: getattr(x, 'id', 0))
 
             vistos_slugs = {limpar_nome_para_slug(v["nome"]) for v in memoria.values()}
