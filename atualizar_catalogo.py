@@ -1,6 +1,6 @@
 import os
-import json
 import re
+import json
 import asyncio
 import emoji
 from dotenv import load_dotenv
@@ -33,7 +33,7 @@ def limpar_nome_para_slug(texto):
 
 async def main():
     if not API_ID or not API_HASH or not PYROGRAM_SESSION:
-        print("❌ Credenciais ausentes no arquivo .env / Secrets!")
+        print("❌ Credenciais ausentes no arquivo .env!")
         return
 
     if os.path.exists(JSON_FILE):
@@ -48,8 +48,7 @@ async def main():
 
     try:
         async with app:
-            chat_obj = await app.get_chat(CHAT_ID)
-            peer = await app.resolve_peer(chat_obj.id)
+            peer = await app.resolve_peer(CHAT_ID)
             
             offset_date = 0
             offset_id = 0
@@ -57,6 +56,7 @@ async def main():
             limit = 100
             todos_topicos = []
 
+            # Paginação via API RAW
             while True:
                 res = await app.invoke(
                     functions.channels.GetForumTopics(
@@ -82,6 +82,7 @@ async def main():
                 offset_id = getattr(ultimo, "top_message", 0)
                 offset_date = getattr(ultimo, "date", 0)
 
+            # Ordena do mais antigo para o mais novo
             todos_topicos.sort(key=lambda x: getattr(x, 'id', 0))
 
             vistos_slugs = {limpar_nome_para_slug(v["nome"]) for v in memoria.values()}
