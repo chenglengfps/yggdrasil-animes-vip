@@ -36,6 +36,8 @@ jobs:
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add catalogo_memoria.json
-        git commit -m "Auto-update: catalogo_memoria.json [skip ci]" || exit 0
-        git push
+        if [ -f catalogo_memoria.json ]; then
+          git add -f catalogo_memoria.json
+          git commit -m "Auto-update: catalogo_memoria.json [skip ci]" || exit 0
+          git push
+        fi
